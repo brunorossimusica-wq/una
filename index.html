@@ -318,7 +318,7 @@
   }
   .una-mark svg circle{fill:var(--p-accent)}
   .una-mark .una-tag{
-    font-family:'Space Mono',monospace;font-size:var(--tag-size,16px);letter-spacing:4px;
+    font-family:'Space Mono',monospace;font-size:var(--tag-size,22px);letter-spacing:4px;
     color:var(--p-accent);text-transform:uppercase;
   }
 
@@ -378,18 +378,18 @@
   }
   .guests-block.hidden{display:none}
   .guests-label{
-    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:4px;
+    font-family:'Space Mono',monospace;font-size:16px;letter-spacing:4px;
     color:var(--p-bg);background:var(--p-accent);
-    padding:5px 10px;text-transform:uppercase;font-weight:700;
+    padding:7px 14px;text-transform:uppercase;font-weight:700;
     width:fit-content;display:flex;align-items:center;gap:6px;
   }
-  .guests-label::before{content:'★';font-size:13px}
+  .guests-label::before{content:'★';font-size:18px}
   .guests-list{display:flex;gap:14px;align-items:center}
   .guest{
-    display:flex;align-items:center;gap:10px;
+    display:flex;align-items:center;gap:12px;
   }
   .guest-photo{
-    width:64px;height:64px;border-radius:50%;overflow:hidden;
+    width:72px;height:72px;border-radius:50%;overflow:hidden;
     border:2px solid var(--p-accent);flex-shrink:0;
     background:#0d0d0d;
     display:flex;align-items:center;justify-content:center;
@@ -397,16 +397,16 @@
   .guest-photo img{width:100%;height:100%;object-fit:cover}
   .guest-photo-placeholder{
     color:var(--p-accent);font-family:'Space Mono',monospace;
-    font-size:18px;font-weight:700;
+    font-size:22px;font-weight:700;
   }
   .guest-name{
     font-family:'Space Mono',monospace;font-weight:700;
     color:var(--p-fg);text-transform:uppercase;letter-spacing:1.5px;
-    font-size:14px;line-height:1.2;
+    font-size:18px;line-height:1.2;
   }
   .guest-name small{
-    display:block;color:var(--p-accent);font-size:9px;letter-spacing:2px;
-    margin-bottom:2px;font-weight:400;
+    display:block;color:var(--p-accent);font-size:13px;letter-spacing:2px;
+    margin-bottom:3px;font-weight:400;
   }
 
   /* Grid de fotos do line-up */
@@ -422,13 +422,13 @@
   .lineup-grid .artist img{width:100%;flex:1;object-fit:cover;display:block}
   .lineup-grid .artist .artist-name{
     background:var(--p-accent);color:var(--p-bg);
-    padding:8px 12px;font-family:'Space Mono',monospace;font-weight:700;
-    font-size:14px;letter-spacing:2px;text-transform:uppercase;text-align:center;
+    padding:10px 14px;font-family:'Space Mono',monospace;font-weight:700;
+    font-size:18px;letter-spacing:1.5px;text-transform:uppercase;text-align:center;
   }
   .lineup-grid .artist.empty{
     background:transparent;border-style:dashed;
     align-items:center;justify-content:center;
-    color:#444;font-family:'Space Mono',monospace;font-size:12px;
+    color:#444;font-family:'Space Mono',monospace;font-size:16px;
     letter-spacing:2px;text-transform:uppercase;
   }
 
@@ -446,14 +446,14 @@
   /* TEMPLATE 1 — CLÁSSICO */
   .tpl-classic .una-mark{top:80px;left:80px}
   .tpl-classic .poster-content{left:80px;right:80px;bottom:140px}
-  .tpl-classic .event-type{font-size:18px;margin-bottom:24px}
+  .tpl-classic .event-type{font-size:22px;margin-bottom:24px}
   .tpl-classic .event-type::before{width:40px}
   .tpl-classic .event-title{font-size:160px;margin-bottom:32px}
-  .tpl-classic .event-lineup{font-size:24px;padding-left:20px;margin-bottom:32px}
+  .tpl-classic .event-lineup{font-size:30px;padding-left:20px;margin-bottom:32px;line-height:1.5}
   .tpl-classic .event-meta{gap:48px;padding-top:24px}
-  .tpl-classic .event-meta .item label{font-size:11px;margin-bottom:6px}
-  .tpl-classic .event-meta .item .v{font-size:22px}
-  .tpl-classic .poster-footer{bottom:60px;left:80px;right:80px;font-size:12px}
+  .tpl-classic .event-meta .item label{font-size:16px;margin-bottom:8px;letter-spacing:2.5px}
+  .tpl-classic .event-meta .item .v{font-size:28px}
+  .tpl-classic .poster-footer{bottom:60px;left:80px;right:80px;font-size:18px;letter-spacing:3px}
 
   /* TEMPLATE 2 — CIRCULAR */
   .tpl-circular{--frame-pad:0}
@@ -462,19 +462,19 @@
   .tpl-circular .una-mark{top:60px;left:50%;transform:translateX(-50%)}
   .tpl-circular .center-image{top:200px;width:520px;height:520px}
   .tpl-circular .poster-content{bottom:60px;left:0;right:0;text-align:center;padding:0 80px}
-  .tpl-circular .event-type{justify-content:center;font-size:14px;margin-bottom:14px}
+  .tpl-circular .event-type{justify-content:center;font-size:18px;margin-bottom:14px;letter-spacing:5px}
   .tpl-circular .event-type::before,.tpl-circular .event-type::after{
     content:'';height:1px;background:var(--p-accent);width:30px;
   }
   .tpl-circular .event-title{font-size:96px;letter-spacing:6px;margin-bottom:18px;line-height:1}
   .tpl-circular .event-lineup{
-    font-size:18px;color:var(--p-muted);border:none;padding:0;margin-bottom:18px;
+    font-size:24px;color:var(--p-muted);border:none;padding:0;margin-bottom:18px;line-height:1.5;
   }
   .tpl-circular .event-meta{
-    border:none;font-size:18px;letter-spacing:4px;color:var(--p-accent);
+    border:none;font-size:24px;letter-spacing:3px;color:var(--p-accent);
     justify-content:center;gap:24px;
   }
-  .tpl-circular .event-meta .item .v{color:var(--p-accent);font-size:18px}
+  .tpl-circular .event-meta .item .v{color:var(--p-accent);font-size:24px}
   .tpl-circular .event-meta .item label{display:none}
 
   /* TEMPLATE 3 — DIVIDIDO */
@@ -489,16 +489,16 @@
     right:0;top:0;width:50%;height:100%;left:auto;bottom:auto;
     padding:80px 60px;display:flex;flex-direction:column;justify-content:center;
   }
-  .tpl-split .event-type{font-size:14px;margin-bottom:20px}
+  .tpl-split .event-type{font-size:18px;margin-bottom:20px;letter-spacing:4px}
   .tpl-split .event-type::before{width:30px}
   .tpl-split .event-title{font-size:120px;margin-bottom:30px}
-  .tpl-split .event-lineup{font-size:18px;line-height:1.7;padding-left:16px;margin-bottom:40px}
+  .tpl-split .event-lineup{font-size:22px;line-height:1.7;padding-left:16px;margin-bottom:40px}
   .tpl-split .event-meta{
     border-top-color:var(--p-muted);padding-top:24px;display:block;
   }
-  .tpl-split .event-meta .item{margin-bottom:14px}
-  .tpl-split .event-meta .item label{font-size:10px;margin-bottom:4px}
-  .tpl-split .event-meta .item .v{font-size:18px}
+  .tpl-split .event-meta .item{margin-bottom:16px}
+  .tpl-split .event-meta .item label{font-size:14px;margin-bottom:5px;letter-spacing:2.5px}
+  .tpl-split .event-meta .item .v{font-size:24px}
   .tpl-split .poster-footer{display:none}
 
   /* TEMPLATE 4 — POESIA (centrado, etéreo) */
@@ -508,7 +508,7 @@
     left:80px;right:80px;top:50%;transform:translateY(-50%);text-align:center;
   }
   .tpl-poetry .event-type{
-    justify-content:center;font-size:13px;letter-spacing:8px;margin-bottom:30px;
+    justify-content:center;font-size:18px;letter-spacing:7px;margin-bottom:30px;
   }
   .tpl-poetry .event-type::before{width:60px}
   .tpl-poetry .event-type::after{
@@ -519,11 +519,11 @@
     margin-bottom:40px;font-style:italic;
   }
   .tpl-poetry .event-lineup{
-    font-size:20px;line-height:2;border:none;padding:0;text-align:center;
+    font-size:26px;line-height:1.8;border:none;padding:0;text-align:center;
     color:var(--p-muted);font-style:italic;letter-spacing:2px;
   }
   .tpl-poetry .poster-footer{
-    bottom:80px;left:80px;right:80px;font-size:12px;justify-content:center;gap:30px;
+    bottom:80px;left:80px;right:80px;font-size:18px;justify-content:center;gap:30px;letter-spacing:3px;
   }
   .tpl-poetry .poster-footer span:not(:first-child)::before{
     content:'·';margin-right:30px;color:var(--p-accent);
@@ -541,8 +541,8 @@
   }
   .tpl-slam .event-type{
     background:var(--p-accent);color:var(--p-bg);
-    padding:8px 16px;display:inline-flex;width:fit-content;font-size:18px;
-    margin-bottom:30px;letter-spacing:8px;font-weight:700;
+    padding:10px 18px;display:inline-flex;width:fit-content;font-size:22px;
+    margin-bottom:30px;letter-spacing:6px;font-weight:700;
   }
   .tpl-slam .event-type::before{display:none}
   .tpl-slam .event-title{
@@ -550,21 +550,21 @@
     letter-spacing:-4px;margin-bottom:30px;
   }
   .tpl-slam .event-lineup{
-    font-size:26px;font-weight:700;border-left-width:4px;padding-left:20px;
-    text-transform:uppercase;letter-spacing:2px;
+    font-size:32px;font-weight:700;border-left-width:4px;padding-left:20px;
+    text-transform:uppercase;letter-spacing:2px;line-height:1.4;
   }
   .tpl-slam .event-meta{
     position:absolute;bottom:70px;left:70px;right:70px;
     border-top-width:2px;padding-top:20px;
   }
-  .tpl-slam .event-meta .item label{font-size:11px}
-  .tpl-slam .event-meta .item .v{font-size:24px}
-  .tpl-slam .poster-footer{bottom:30px;left:70px;right:70px;font-size:11px}
+  .tpl-slam .event-meta .item label{font-size:15px;letter-spacing:2.5px;margin-bottom:6px}
+  .tpl-slam .event-meta .item .v{font-size:30px}
+  .tpl-slam .poster-footer{bottom:30px;left:70px;right:70px;font-size:16px;letter-spacing:3px}
 
   /* TEMPLATE 6 — SHOW (line-up grid com fotos) */
   .tpl-show .una-mark{top:60px;left:60px}
   .tpl-show .event-type{
-    position:absolute;top:60px;right:60px;font-size:14px;margin:0;
+    position:absolute;top:60px;right:60px;font-size:18px;margin:0;letter-spacing:4px;
   }
   .tpl-show .event-type::before{display:none}
   .tpl-show .poster-content{
@@ -575,30 +575,35 @@
   .tpl-show .event-meta{
     margin-top:20px;gap:36px;padding-top:20px;
   }
-  .tpl-show .event-meta .item label{font-size:11px;margin-bottom:6px}
-  .tpl-show .event-meta .item .v{font-size:20px}
+  .tpl-show .event-meta .item label{font-size:15px;margin-bottom:8px;letter-spacing:2.5px}
+  .tpl-show .event-meta .item .v{font-size:26px}
   .tpl-show .lineup-grid{
     bottom:130px;left:60px;right:60px;height:480px;
     grid-template-columns:repeat(3,1fr);
   }
-  .tpl-show .poster-footer{bottom:60px;left:60px;right:60px;font-size:12px}
+  .tpl-show .poster-footer{bottom:60px;left:60px;right:60px;font-size:18px;letter-spacing:3px}
 
   /* ===== Ajustes específicos por formato ===== */
 
   /* Story / Reels — vertical 9:16 */
   .fmt-story.tpl-classic .una-mark{top:120px;left:80px}
   .fmt-story.tpl-classic .poster-content{bottom:200px}
+  .fmt-story.tpl-classic .event-type{font-size:26px;margin-bottom:30px}
   .fmt-story.tpl-classic .event-title{font-size:180px}
-  .fmt-story.tpl-classic .event-lineup{font-size:30px}
-  .fmt-story.tpl-classic .event-meta{flex-direction:column;gap:18px}
-  .fmt-story.tpl-classic .event-meta .item .v{font-size:28px}
-  .fmt-story.tpl-classic .poster-footer{bottom:120px}
+  .fmt-story.tpl-classic .event-lineup{font-size:36px;line-height:1.5}
+  .fmt-story.tpl-classic .event-meta{flex-direction:column;gap:20px}
+  .fmt-story.tpl-classic .event-meta .item label{font-size:18px;margin-bottom:8px}
+  .fmt-story.tpl-classic .event-meta .item .v{font-size:34px}
+  .fmt-story.tpl-classic .poster-footer{bottom:120px;font-size:22px}
 
   .fmt-story.tpl-circular .center-image{top:380px;width:680px;height:680px}
   .fmt-story.tpl-circular .una-mark{top:160px}
   .fmt-story.tpl-circular .event-title{font-size:140px;letter-spacing:8px}
   .fmt-story.tpl-circular .poster-content{bottom:180px}
-  .fmt-story.tpl-circular .event-lineup{font-size:24px}
+  .fmt-story.tpl-circular .event-type{font-size:22px}
+  .fmt-story.tpl-circular .event-lineup{font-size:30px}
+  .fmt-story.tpl-circular .event-meta,
+  .fmt-story.tpl-circular .event-meta .item .v{font-size:30px}
 
   .fmt-story.tpl-split{padding:0}
   .fmt-story.tpl-split .poster-bg{width:100%;height:50%}
@@ -609,19 +614,34 @@
     width:100%;height:50%;top:50%;padding:80px 80px;
   }
   .fmt-story.tpl-split .event-title{font-size:140px}
+  .fmt-story.tpl-split .event-type{font-size:22px}
+  .fmt-story.tpl-split .event-lineup{font-size:28px}
+  .fmt-story.tpl-split .event-meta .item label{font-size:16px}
+  .fmt-story.tpl-split .event-meta .item .v{font-size:28px}
   .fmt-story.tpl-split .una-mark{top:80px;right:80px}
 
+  .fmt-story.tpl-poetry .event-type{font-size:22px}
   .fmt-story.tpl-poetry .event-title{font-size:200px}
-  .fmt-story.tpl-poetry .event-lineup{font-size:26px}
+  .fmt-story.tpl-poetry .event-lineup{font-size:32px}
+  .fmt-story.tpl-poetry .poster-footer{font-size:22px}
 
+  .fmt-story.tpl-slam .event-type{font-size:28px;padding:12px 22px}
   .fmt-story.tpl-slam .event-title{font-size:240px}
-  .fmt-story.tpl-slam .event-lineup{font-size:30px}
+  .fmt-story.tpl-slam .event-lineup{font-size:38px}
+  .fmt-story.tpl-slam .event-meta .item label{font-size:18px}
+  .fmt-story.tpl-slam .event-meta .item .v{font-size:36px}
+  .fmt-story.tpl-slam .poster-footer{font-size:20px}
 
   .fmt-story.tpl-show .lineup-grid{
     grid-template-columns:repeat(2,1fr);
     height:auto;top:280px;bottom:300px;
   }
+  .fmt-story.tpl-show .lineup-grid .artist .artist-name{font-size:22px;padding:14px 16px}
   .fmt-story.tpl-show .event-title{font-size:140px}
+  .fmt-story.tpl-show .event-type{font-size:22px}
+  .fmt-story.tpl-show .event-meta .item label{font-size:16px}
+  .fmt-story.tpl-show .event-meta .item .v{font-size:30px}
+  .fmt-story.tpl-show .poster-footer{font-size:22px}
 
   /* Portrait 4:5 */
   .fmt-portrait.tpl-classic .event-title{font-size:170px}
@@ -632,56 +652,91 @@
   .fmt-event.tpl-classic .una-mark{top:50px;left:50px}
   .fmt-event.tpl-classic .poster-content{left:50px;right:50px;bottom:50px;top:120px}
   .fmt-event.tpl-classic .event-title{font-size:96px;margin-bottom:18px}
-  .fmt-event.tpl-classic .event-lineup{font-size:18px;margin-bottom:18px}
-  .fmt-event.tpl-classic .event-type{font-size:14px;margin-bottom:14px}
+  .fmt-event.tpl-classic .event-lineup{font-size:22px;margin-bottom:18px;line-height:1.4}
+  .fmt-event.tpl-classic .event-type{font-size:18px;margin-bottom:14px;letter-spacing:4px}
   .fmt-event.tpl-classic .event-meta{gap:30px;padding-top:14px}
-  .fmt-event.tpl-classic .event-meta .item .v{font-size:16px}
-  .fmt-event.tpl-classic .event-meta .item label{font-size:9px;margin-bottom:3px}
+  .fmt-event.tpl-classic .event-meta .item .v{font-size:20px}
+  .fmt-event.tpl-classic .event-meta .item label{font-size:13px;margin-bottom:4px;letter-spacing:2px}
   .fmt-event.tpl-classic .poster-footer{display:none}
   .fmt-event.tpl-classic .poster-frame{inset:24px}
 
   .fmt-event.tpl-circular{display:none} /* não combina */
+  .fmt-event.tpl-poetry .event-type{font-size:18px}
   .fmt-event.tpl-poetry .event-title{font-size:120px;margin-bottom:24px}
+  .fmt-event.tpl-poetry .event-lineup{font-size:22px}
   .fmt-event.tpl-poetry .una-mark{top:40px}
   .fmt-event.tpl-poetry .poster-content{padding:0 60px}
+  .fmt-event.tpl-poetry .poster-footer{font-size:16px}
 
   .fmt-event.tpl-split .una-mark{top:30px;right:30px}
   .fmt-event.tpl-split .poster-content{padding:50px 40px}
+  .fmt-event.tpl-split .event-type{font-size:16px}
   .fmt-event.tpl-split .event-title{font-size:80px;margin-bottom:18px}
-  .fmt-event.tpl-split .event-lineup{font-size:14px;margin-bottom:18px}
+  .fmt-event.tpl-split .event-lineup{font-size:18px;margin-bottom:18px;line-height:1.5}
+  .fmt-event.tpl-split .event-meta .item label{font-size:13px}
+  .fmt-event.tpl-split .event-meta .item .v{font-size:20px}
 
+  .fmt-event.tpl-slam .event-type{font-size:18px;padding:8px 14px}
   .fmt-event.tpl-slam .event-title{font-size:130px}
-  .fmt-event.tpl-slam .event-lineup{font-size:18px}
+  .fmt-event.tpl-slam .event-lineup{font-size:22px}
   .fmt-event.tpl-slam .event-meta{position:static;margin-top:20px}
+  .fmt-event.tpl-slam .event-meta .item label{font-size:13px}
+  .fmt-event.tpl-slam .event-meta .item .v{font-size:22px}
   .fmt-event.tpl-slam .poster-content{top:130px;bottom:50px}
 
   .fmt-event.tpl-show .lineup-grid{height:300px;bottom:60px}
+  .fmt-event.tpl-show .lineup-grid .artist .artist-name{font-size:14px;padding:6px 10px}
   .fmt-event.tpl-show .event-title{font-size:80px}
+  .fmt-event.tpl-show .event-type{font-size:16px}
+  .fmt-event.tpl-show .event-meta .item label{font-size:13px}
+  .fmt-event.tpl-show .event-meta .item .v{font-size:20px}
   .fmt-event.tpl-show .poster-content{top:110px}
 
   /* Twitter 16:9 — similar ao event */
   .fmt-twitter.tpl-classic .una-mark{top:60px;left:80px}
   .fmt-twitter.tpl-classic .poster-content{left:80px;right:80px;bottom:60px;top:140px}
+  .fmt-twitter.tpl-classic .event-type{font-size:22px;margin-bottom:18px}
   .fmt-twitter.tpl-classic .event-title{font-size:140px;margin-bottom:20px}
-  .fmt-twitter.tpl-classic .event-lineup{font-size:22px;margin-bottom:20px}
+  .fmt-twitter.tpl-classic .event-lineup{font-size:26px;margin-bottom:20px;line-height:1.4}
   .fmt-twitter.tpl-classic .event-meta{gap:40px;padding-top:18px}
-  .fmt-twitter.tpl-classic .event-meta .item .v{font-size:20px}
+  .fmt-twitter.tpl-classic .event-meta .item label{font-size:16px;margin-bottom:6px}
+  .fmt-twitter.tpl-classic .event-meta .item .v{font-size:26px}
   .fmt-twitter.tpl-classic .poster-footer{display:none}
 
   .fmt-twitter.tpl-circular{display:none}
   .fmt-twitter.tpl-split .una-mark{top:50px;right:50px}
+  .fmt-twitter.tpl-split .event-type{font-size:18px}
   .fmt-twitter.tpl-split .event-title{font-size:110px}
+  .fmt-twitter.tpl-split .event-lineup{font-size:22px}
+  .fmt-twitter.tpl-split .event-meta .item label{font-size:14px}
+  .fmt-twitter.tpl-split .event-meta .item .v{font-size:24px}
+  .fmt-twitter.tpl-poetry .event-type{font-size:22px}
   .fmt-twitter.tpl-poetry .event-title{font-size:160px}
+  .fmt-twitter.tpl-poetry .event-lineup{font-size:26px}
+  .fmt-twitter.tpl-slam .event-type{font-size:24px;padding:10px 18px}
   .fmt-twitter.tpl-slam .event-title{font-size:170px}
+  .fmt-twitter.tpl-slam .event-lineup{font-size:30px}
+  .fmt-twitter.tpl-slam .event-meta .item label{font-size:16px}
+  .fmt-twitter.tpl-slam .event-meta .item .v{font-size:28px}
   .fmt-twitter.tpl-show .event-title{font-size:120px}
+  .fmt-twitter.tpl-show .event-type{font-size:20px}
   .fmt-twitter.tpl-show .lineup-grid{height:420px;bottom:60px}
+  .fmt-twitter.tpl-show .lineup-grid .artist .artist-name{font-size:18px}
 
   /* Flyer A4 — vertical alongado */
   .fmt-flyer.tpl-classic .event-title{font-size:200px}
-  .fmt-flyer.tpl-classic .event-lineup{font-size:28px}
+  .fmt-flyer.tpl-classic .event-lineup{font-size:36px;line-height:1.5}
+  .fmt-flyer.tpl-classic .event-type{font-size:28px;letter-spacing:6px}
+  .fmt-flyer.tpl-classic .event-meta .item label{font-size:20px;letter-spacing:3px}
+  .fmt-flyer.tpl-classic .event-meta .item .v{font-size:36px}
+  .fmt-flyer.tpl-classic .poster-footer{font-size:22px}
   .fmt-flyer.tpl-classic .una-mark{top:100px;left:90px}
   .fmt-flyer.tpl-circular .center-image{top:300px;width:680px;height:680px}
   .fmt-flyer.tpl-circular .event-title{font-size:130px}
+  .fmt-flyer.tpl-circular .event-type{font-size:24px}
+  .fmt-flyer.tpl-circular .event-lineup{font-size:30px}
+  .fmt-flyer.tpl-circular .event-meta,
+  .fmt-flyer.tpl-circular .event-meta .item .v{font-size:30px}
 
   /* ============ POSICIONAMENTO DOS GUESTS POR TEMPLATE ============ */
   /* Clássico — guests acima do title */
@@ -689,8 +744,9 @@
     left:80px;right:80px;bottom:auto;
     top:200px;
   }
-  .tpl-classic .guest-photo{width:72px;height:72px}
-  .tpl-classic .guest-name{font-size:15px}
+  .tpl-classic .guest-photo{width:84px;height:84px}
+  .tpl-classic .guest-name{font-size:20px}
+  .tpl-classic .guest-name small{font-size:14px}
 
   /* Circular — guests entre marca e foto central */
   .tpl-circular .guests-block{
@@ -699,7 +755,9 @@
   }
   .tpl-circular .guests-list{justify-content:center}
   .tpl-circular .center-image{top:280px}
-  .tpl-circular .guest-photo{width:56px;height:56px;border-width:2px}
+  .tpl-circular .guest-photo{width:64px;height:64px;border-width:2px}
+  .tpl-circular .guest-name{font-size:16px}
+  .tpl-circular .guest-name small{font-size:12px}
 
   /* Dividido — dentro da coluna direita, antes do meta */
   .tpl-split .guests-block{
@@ -707,7 +765,9 @@
     margin-bottom:24px;
   }
   .tpl-split .guests-list{flex-wrap:wrap}
-  .tpl-split .guest-photo{width:56px;height:56px}
+  .tpl-split .guest-photo{width:64px;height:64px}
+  .tpl-split .guest-name{font-size:16px}
+  .tpl-split .guest-name small{font-size:12px}
 
   /* Poesia — discreto, no rodapé acima do footer */
   .tpl-poetry .guests-block{
@@ -716,21 +776,22 @@
   .tpl-poetry .guests-list{justify-content:center}
   .tpl-poetry .guests-label{
     background:transparent;color:var(--p-accent);
-    border:1px solid var(--p-accent);padding:4px 12px;
+    border:1px solid var(--p-accent);padding:6px 14px;font-size:14px;
   }
-  .tpl-poetry .guest-photo{width:60px;height:60px}
-  .tpl-poetry .guest-name{font-size:13px;letter-spacing:2px}
+  .tpl-poetry .guest-photo{width:68px;height:68px}
+  .tpl-poetry .guest-name{font-size:16px;letter-spacing:2px}
+  .tpl-poetry .guest-name small{font-size:12px}
 
   /* Slam — destaque grande */
   .tpl-slam .guests-block{
     top:auto;bottom:230px;left:70px;right:70px;
   }
   .tpl-slam .guests-label{
-    font-size:14px;padding:8px 16px;letter-spacing:6px;
+    font-size:18px;padding:10px 18px;letter-spacing:5px;
   }
-  .tpl-slam .guest-photo{width:80px;height:80px;border-width:3px}
-  .tpl-slam .guest-name{font-size:18px;letter-spacing:2px}
-  .tpl-slam .guest-name small{font-size:10px}
+  .tpl-slam .guest-photo{width:96px;height:96px;border-width:3px}
+  .tpl-slam .guest-name{font-size:22px;letter-spacing:2px}
+  .tpl-slam .guest-name small{font-size:14px}
 
   /* Show — guests acima da meta, abaixo do title */
   .tpl-show .guests-block{
@@ -738,7 +799,9 @@
     position:relative;margin-top:14px;
     left:auto;right:auto;
   }
-  .tpl-show .guest-photo{width:64px;height:64px}
+  .tpl-show .guest-photo{width:72px;height:72px}
+  .tpl-show .guest-name{font-size:18px}
+  .tpl-show .guest-name small{font-size:13px}
 
   /* Posicionamento do guests-block no Show */
   .tpl-show .poster-content{display:flex;flex-direction:column}
@@ -746,21 +809,27 @@
   /* ===== Ajustes nos formatos ===== */
 
   /* Story — guests maiores */
-  .fmt-story .guest-photo{width:90px;height:90px}
-  .fmt-story .guest-name{font-size:18px}
+  .fmt-story .guest-photo{width:104px;height:104px}
+  .fmt-story .guest-name{font-size:22px}
+  .fmt-story .guest-name small{font-size:16px}
+  .fmt-story .guests-label{font-size:18px;padding:8px 16px}
   .fmt-story.tpl-classic .guests-block{top:280px}
   .fmt-story.tpl-circular .guests-block{top:240px}
   .fmt-story.tpl-circular .center-image{top:420px}
   .fmt-story.tpl-poetry .guests-block{bottom:240px}
   .fmt-story.tpl-slam .guests-block{bottom:340px}
+  .fmt-story.tpl-slam .guest-photo{width:120px;height:120px}
+  .fmt-story.tpl-slam .guest-name{font-size:26px}
 
-  /* Event FB / Twitter — landscape compacto */
+  /* Event FB / Twitter — landscape compacto, mas legível */
   .fmt-event .guest-photo,
-  .fmt-twitter .guest-photo{width:48px;height:48px;border-width:2px}
+  .fmt-twitter .guest-photo{width:60px;height:60px;border-width:2px}
   .fmt-event .guest-name,
-  .fmt-twitter .guest-name{font-size:12px}
+  .fmt-twitter .guest-name{font-size:15px}
+  .fmt-event .guest-name small,
+  .fmt-twitter .guest-name small{font-size:11px}
   .fmt-event .guests-label,
-  .fmt-twitter .guests-label{font-size:10px;padding:3px 8px;letter-spacing:2px}
+  .fmt-twitter .guests-label{font-size:13px;padding:5px 10px;letter-spacing:2.5px}
   .fmt-event.tpl-classic .guests-block{top:90px;right:auto;left:50px}
   .fmt-twitter.tpl-classic .guests-block{top:110px;right:auto;left:80px}
   .fmt-event.tpl-circular{display:none}
@@ -770,8 +839,10 @@
   .fmt-twitter.tpl-slam .guests-block{bottom:160px;left:80px;right:80px}
 
   /* Flyer — guests bem destacados */
-  .fmt-flyer .guest-photo{width:90px;height:90px}
-  .fmt-flyer .guest-name{font-size:18px}
+  .fmt-flyer .guest-photo{width:108px;height:108px}
+  .fmt-flyer .guest-name{font-size:24px}
+  .fmt-flyer .guest-name small{font-size:16px}
+  .fmt-flyer .guests-label{font-size:20px;padding:9px 18px}
   .fmt-flyer.tpl-classic .guests-block{top:280px}
   .fmt-flyer.tpl-circular .guests-block{top:200px}
   .fmt-flyer.tpl-circular .center-image{top:380px}
