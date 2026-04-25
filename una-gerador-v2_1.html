@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNA — Gerador de Artes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Archivo+Black&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --una-cyan:#1FA9A8;
+    --una-cyan-bright:#2BC4C2;
+    --una-cyan-deep:#0E7A79;
+    --una-black:#000;
+    --una-dark:#0a0a0a;
+    --una-cream:#f4f1ea;
+    --una-cream-dark:#1a1814;
+    --una-neon:#00fff0;
+    --bg:#0a0a0a;
+    --panel:#111;
+    --panel-2:#1a1a1a;
+    --border:#222;
+    --text:#e5e5e5;
+    --muted:#888;
+    --muted-2:#555;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+  button{font-family:inherit}
+
+  .app{
+    display:grid;
+    grid-template-columns: 440px 1fr 340px;
+    min-height:100vh;
+  }
+
+  /* ============ PAINEL ESQUERDA — CONTROLES ============ */
+  .controls{
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    padding:24px 24px 80px;
+    overflow-y:auto;
+    max-height:100vh;
+    scrollbar-width:thin;
+    scrollbar-color:#333 transparent;
+  }
+  .controls::-webkit-scrollbar{width:6px}
+  .controls::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+
+  .brand{
+    display:flex;align-items:center;gap:12px;
+    padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:24px;
+  }
+  .brand-mark{
+    width:42px;height:42px;border-radius:50%;
+    border:2px solid var(--una-cyan);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Mono',monospace;font-weight:700;
+    color:var(--una-cyan);font-size:13px;letter-spacing:1px;
+  }
+  .brand-text h1{font-family:'Space Mono',monospace;font-size:14px;letter-spacing:2px;color:#fff}
+  .brand-text p{font-size:10px;color:var(--muted-2);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+  /* Tabs */
+  .tabs{
+    display:flex;gap:0;background:var(--panel-2);border-radius:6px;padding:3px;margin-bottom:20px;
+  }
+  .tab{
+    flex:1;padding:9px 8px;border:none;background:transparent;color:var(--muted);
+    font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;
+    font-family:'Space Mono',monospace;font-weight:700;cursor:pointer;
+    border-radius:4px;transition:all .15s;
+  }
+  .tab.active{background:var(--una-cyan);color:#000}
+  .tab:not(.active):hover{color:#fff}
+
+  .tab-panel{display:none}
+  .tab-panel.active{display:block;animation:fadeIn .2s}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+  .field{margin-bottom:16px}
+  .field label{
+    display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:1.5px;
+    color:var(--muted);margin-bottom:6px;font-weight:600;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .field label .counter{color:var(--muted-2);font-size:10px}
+  .field input,.field textarea,.field select{
+    width:100%;background:var(--panel-2);border:1px solid #2a2a2a;
+    color:#fff;padding:10px 12px;border-radius:4px;font-family:'Inter',sans-serif;
+    font-size:14px;transition:border-color .15s;
+  }
+  .field input:focus,.field textarea:focus,.field select:focus{
+    outline:none;border-color:var(--una-cyan);
+  }
+  .field textarea{resize:vertical;min-height:78px;font-family:'Space Mono',monospace;font-size:13px;line-height:1.5}
+  .field .hint{font-size:10.5px;color:var(--muted-2);margin-top:4px}
+
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+  .section-title{
+    font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:2px;
+    color:var(--una-cyan);text-transform:uppercase;
+    margin:22px 0 12px;padding-top:16px;border-top:1px solid #1f1f1f;
+    display:flex;align-items:center;gap:8px;
+  }
+  .section-title:first-of-type{border-top:none;padding-top:0;margin-top:0}
+  .section-title::before{content:'//';color:var(--muted-2)}
+
+  /* ============ FORMATOS ============ */
+  .format-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  }
+  .format-btn{
+    background:var(--panel-2);border:1px solid #2a2a2a;color:var(--muted);
+    padding:10px;border-radius:5px;cursor:pointer;
+    text-align:left;transition:all .15s;
+    display:flex;flex-direction:column;gap:3px;
+  }
+  .format-btn:hover{border-color:#444;color:#ccc}
+  .format-btn.active{background:var(--una-cyan);border-color:var(--una-cyan);color:#000}
+  .format-btn .fmt-name{
+    font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:1px;
+  }
+  .format-btn .fmt-size{font-size:10px;opacity:.7;font-family:'Space Mono',monospace}
+
+  /* Templates */
+  .template-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .template-btn{
+    background:var(--panel-2);border:1px solid #2a2a2a;color:var(--muted);
+    padding:10px 12px;border-radius:5px;cursor:pointer;
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;
+    text-transform:uppercase;text-align:left;transition:all .15s;
+  }
+  .template-btn:hover{border-color:#444;color:#ccc}
+  .template-btn.active{background:var(--una-cyan);border-color:var(--una-cyan);color:#000;font-weight:700}
+
+  /* Palette */
+  .palette-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .palette-btn{
+    background:var(--panel-2);border:1px solid #2a2a2a;
+    padding:8px;border-radius:5px;cursor:pointer;transition:all .15s;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+  }
+  .palette-btn:hover{border-color:#444}
+  .palette-btn.active{border-color:var(--una-cyan);box-shadow:0 0 0 2px rgba(31,169,168,.3)}
+  .palette-swatch{display:flex;height:24px;width:100%;border-radius:3px;overflow:hidden}
+  .palette-swatch span{flex:1}
+  .palette-btn .palette-name{
+    font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:1px;
+    text-transform:uppercase;color:var(--muted);
+  }
+  .palette-btn.active .palette-name{color:#fff}
+
+  /* File input */
+  .file-input{position:relative}
+  .file-input input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .file-input-display{
+    background:var(--panel-2);border:1px dashed #333;padding:14px;border-radius:5px;
+    text-align:center;font-size:12px;color:var(--muted);cursor:pointer;
+    transition:all .15s;
+  }
+  .file-input:hover .file-input-display{border-color:var(--una-cyan);color:var(--una-cyan)}
+
+  .image-controls{
+    background:var(--panel-2);border-radius:5px;padding:12px;margin-top:10px;
+    display:none;
+  }
+  .image-controls.visible{display:block}
+  .image-controls .ctrl{margin-bottom:10px}
+  .image-controls .ctrl:last-child{margin-bottom:0}
+  .image-controls label{
+    font-size:10px;letter-spacing:1.5px;color:var(--muted);
+    text-transform:uppercase;display:flex;justify-content:space-between;
+    margin-bottom:5px;font-weight:600;
+  }
+  .image-controls input[type=range]{
+    width:100%;height:4px;border-radius:2px;background:#333;
+    -webkit-appearance:none;appearance:none;outline:none;
+  }
+  .image-controls input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:var(--una-cyan);cursor:pointer;
+  }
+  .image-controls input[type=range]::-moz-range-thumb{
+    width:14px;height:14px;border-radius:50%;background:var(--una-cyan);cursor:pointer;border:none;
+  }
+
+  /* Tags / quick-add */
+  .quick-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .quick-tag{
+    background:var(--panel-2);border:1px solid #2a2a2a;color:var(--muted);
+    padding:5px 10px;border-radius:20px;cursor:pointer;font-size:11px;
+    font-family:'Space Mono',monospace;letter-spacing:.5px;transition:all .15s;
+  }
+  .quick-tag:hover{border-color:var(--una-cyan);color:var(--una-cyan)}
+
+  /* ============ AÇÕES ============ */
+  .action-bar{
+    position:sticky;bottom:0;background:var(--panel);
+    margin:24px -24px -24px;padding:16px 24px;
+    border-top:1px solid var(--border);
+    display:flex;flex-direction:column;gap:8px;
+    z-index:10;
+  }
+  .btn{
+    padding:13px;border-radius:5px;border:none;cursor:pointer;
+    font-family:'Space Mono',monospace;font-weight:700;font-size:11.5px;
+    letter-spacing:2px;text-transform:uppercase;
+    transition:transform .1s,background .15s, opacity .15s;
+  }
+  .btn-primary{background:var(--una-cyan);color:#000}
+  .btn-primary:hover{background:var(--una-cyan-bright);transform:translateY(-1px)}
+  .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+  .btn-secondary{background:var(--panel-2);color:var(--muted);border:1px solid #2a2a2a}
+  .btn-secondary:hover{color:#fff;border-color:#444}
+  .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+  /* ============ ÁREA CENTRAL — PREVIEW ============ */
+  .preview-area{
+    padding:32px 32px 60px;display:flex;flex-direction:column;align-items:center;
+    justify-content:flex-start;gap:18px;overflow-y:auto;max-height:100vh;
+    background:linear-gradient(180deg,#0a0a0a 0%, #050505 100%);
+  }
+  .preview-header{
+    width:100%;max-width:600px;
+    display:flex;justify-content:space-between;align-items:center;
+    color:var(--muted-2);font-family:'Space Mono',monospace;font-size:10.5px;
+    letter-spacing:2px;text-transform:uppercase;
+  }
+  .preview-header .dot{
+    width:8px;height:8px;border-radius:50%;background:var(--una-cyan);
+    display:inline-block;margin-right:6px;animation:pulse 2s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  /* Carrossel — slides nav */
+  .slide-nav{
+    display:flex;gap:6px;align-items:center;
+    background:var(--panel);padding:6px;border-radius:6px;
+    border:1px solid var(--border);
+  }
+  .slide-nav.hidden{display:none}
+  .slide-btn{
+    background:var(--panel-2);border:1px solid #2a2a2a;color:var(--muted);
+    width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:11px;
+    font-family:'Space Mono',monospace;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .15s;
+  }
+  .slide-btn:hover{color:#fff;border-color:#444}
+  .slide-btn.active{background:var(--una-cyan);color:#000;border-color:var(--una-cyan)}
+
+  .canvas-wrap{
+    position:relative;
+    box-shadow:0 24px 60px rgba(0,0,0,.7),0 0 0 1px #1a1a1a;
+    transition:width .3s, height .3s;
+  }
+
+  /* ============ POSTER ============ */
+  /* O poster é renderizado em tamanho real e escalado por transform */
+  .poster{
+    transform-origin:top left;
+    position:absolute;top:0;left:0;
+    background:#000;overflow:hidden;color:#fff;
+    font-family:'Inter',sans-serif;
+  }
+
+  /* paletas */
+  .palette-default{--p-bg:#000;--p-fg:#fff;--p-accent:#1FA9A8;--p-muted:#aaa}
+  .palette-cream{--p-bg:#f4f1ea;--p-fg:#0a0a0a;--p-accent:#0E7A79;--p-muted:#555}
+  .palette-neon{--p-bg:#000;--p-fg:#fff;--p-accent:#00fff0;--p-muted:#aaa}
+
+  .poster{background:var(--p-bg);color:var(--p-fg)}
+
+  /* Camadas */
+  .poster-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+  .poster-bg img{
+    position:absolute;
+    width:var(--img-scale,100%);height:var(--img-scale,100%);
+    object-fit:cover;
+    top:var(--img-y,50%);left:var(--img-x,50%);
+    transform:translate(-50%,-50%);
+    opacity:var(--img-opacity,.55);
+    filter:grayscale(var(--img-gray,.6)) contrast(1.1);
+  }
+  .poster-bg::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(0,0,0,calc(.3 * var(--darken,1))) 0%,rgba(0,0,0,calc(.85 * var(--darken,1))) 70%,var(--p-bg) 100%);
+  }
+  .palette-cream .poster-bg::after{
+    background:linear-gradient(180deg,rgba(244,241,234,calc(.2 * var(--darken,1))) 0%,rgba(244,241,234,calc(.75 * var(--darken,1))) 70%,var(--p-bg) 100%);
+  }
+  .palette-cream .poster-bg img{filter:grayscale(.4) contrast(1)}
+
+  .grain{
+    position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.08;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E");
+  }
+
+  .poster-frame{
+    position:absolute;inset:var(--frame-pad,40px);border:2px solid var(--p-accent);
+    z-index:2;pointer-events:none;
+  }
+  .poster-frame::before,.poster-frame::after{
+    content:'';position:absolute;width:20px;height:20px;background:var(--p-bg);border:2px solid var(--p-accent);
+  }
+  .poster-frame::before{top:-12px;left:-12px}
+  .poster-frame::after{bottom:-12px;right:-12px}
+
+  /* Marca UNA */
+  .una-mark{
+    position:absolute;z-index:3;display:flex;align-items:center;gap:14px;
+  }
+  .una-mark svg circle{fill:var(--p-accent)}
+  .una-mark .una-tag{
+    font-family:'Space Mono',monospace;font-size:var(--tag-size,16px);letter-spacing:4px;
+    color:var(--p-accent);text-transform:uppercase;
+  }
+
+  /* Conteúdo principal */
+  .poster-content{position:absolute;z-index:4}
+  .event-type{
+    font-family:'Space Mono',monospace;letter-spacing:6px;
+    color:var(--p-accent);text-transform:uppercase;
+    display:flex;align-items:center;gap:12px;
+  }
+  .event-type::before{
+    content:'';height:2px;background:var(--p-accent);
+  }
+  .event-title{
+    font-family:'Bebas Neue',sans-serif;line-height:.85;letter-spacing:-2px;
+    color:var(--p-fg);text-transform:uppercase;word-break:break-word;
+  }
+  .event-lineup{
+    font-family:'Space Mono',monospace;line-height:1.5;
+    color:var(--p-fg);white-space:pre-line;
+    border-left:2px solid var(--p-accent);
+  }
+  .event-meta{
+    display:flex;font-family:'Space Mono',monospace;
+    border-top:1px solid var(--p-accent);
+  }
+  .event-meta .item label{
+    letter-spacing:3px;color:var(--p-accent);
+    text-transform:uppercase;display:block;
+  }
+  .event-meta .item .v{color:var(--p-fg);font-weight:700}
+
+  .poster-footer{
+    position:absolute;z-index:4;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:'Space Mono',monospace;letter-spacing:3px;
+    color:var(--p-muted);text-transform:uppercase;
+  }
+
+  /* Imagem central (template circular) */
+  .center-image{
+    position:absolute;z-index:2;border-radius:50%;overflow:hidden;
+    border:3px solid var(--p-accent);
+    left:50%;transform:translateX(-50%);
+  }
+  .center-image img{width:100%;height:100%;object-fit:cover}
+  .center-image-placeholder{
+    width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    color:#333;font-family:'Space Mono',monospace;letter-spacing:3px;
+    text-transform:uppercase;background:#0d0d0d;
+  }
+
+  /* ============ PARTICIPAÇÕES ESPECIAIS ============ */
+  .guests-block{
+    position:absolute;z-index:4;display:flex;flex-direction:column;
+    gap:10px;
+  }
+  .guests-block.hidden{display:none}
+  .guests-label{
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:4px;
+    color:var(--p-bg);background:var(--p-accent);
+    padding:5px 10px;text-transform:uppercase;font-weight:700;
+    width:fit-content;display:flex;align-items:center;gap:6px;
+  }
+  .guests-label::before{content:'★';font-size:13px}
+  .guests-list{display:flex;gap:14px;align-items:center}
+  .guest{
+    display:flex;align-items:center;gap:10px;
+  }
+  .guest-photo{
+    width:64px;height:64px;border-radius:50%;overflow:hidden;
+    border:2px solid var(--p-accent);flex-shrink:0;
+    background:#0d0d0d;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .guest-photo img{width:100%;height:100%;object-fit:cover}
+  .guest-photo-placeholder{
+    color:var(--p-accent);font-family:'Space Mono',monospace;
+    font-size:18px;font-weight:700;
+  }
+  .guest-name{
+    font-family:'Space Mono',monospace;font-weight:700;
+    color:var(--p-fg);text-transform:uppercase;letter-spacing:1.5px;
+    font-size:14px;line-height:1.2;
+  }
+  .guest-name small{
+    display:block;color:var(--p-accent);font-size:9px;letter-spacing:2px;
+    margin-bottom:2px;font-weight:400;
+  }
+
+  /* Grid de fotos do line-up */
+  .lineup-grid{
+    position:absolute;z-index:3;
+    display:grid;gap:16px;
+  }
+  .lineup-grid .artist{
+    background:#1a1a1a;border:1px solid var(--p-accent);
+    overflow:hidden;position:relative;
+    display:flex;flex-direction:column;
+  }
+  .lineup-grid .artist img{width:100%;flex:1;object-fit:cover;display:block}
+  .lineup-grid .artist .artist-name{
+    background:var(--p-accent);color:var(--p-bg);
+    padding:8px 12px;font-family:'Space Mono',monospace;font-weight:700;
+    font-size:14px;letter-spacing:2px;text-transform:uppercase;text-align:center;
+  }
+  .lineup-grid .artist.empty{
+    background:transparent;border-style:dashed;
+    align-items:center;justify-content:center;
+    color:#444;font-family:'Space Mono',monospace;font-size:12px;
+    letter-spacing:2px;text-transform:uppercase;
+  }
+
+  /* ===== DIMENSÕES POR FORMATO ===== */
+  /* O poster é renderizado em tamanho real, depois escalado pelo JS */
+  .poster.fmt-square{width:1080px;height:1080px}
+  .poster.fmt-story{width:1080px;height:1920px}
+  .poster.fmt-portrait{width:1080px;height:1350px}
+  .poster.fmt-event{width:1200px;height:630px}
+  .poster.fmt-twitter{width:1600px;height:900px}
+  .poster.fmt-flyer{width:1240px;height:1754px} /* ~A4 @150dpi */
+
+  /* ============ TEMPLATES ============ */
+
+  /* TEMPLATE 1 — CLÁSSICO */
+  .tpl-classic .una-mark{top:80px;left:80px}
+  .tpl-classic .poster-content{left:80px;right:80px;bottom:140px}
+  .tpl-classic .event-type{font-size:18px;margin-bottom:24px}
+  .tpl-classic .event-type::before{width:40px}
+  .tpl-classic .event-title{font-size:160px;margin-bottom:32px}
+  .tpl-classic .event-lineup{font-size:24px;padding-left:20px;margin-bottom:32px}
+  .tpl-classic .event-meta{gap:48px;padding-top:24px}
+  .tpl-classic .event-meta .item label{font-size:11px;margin-bottom:6px}
+  .tpl-classic .event-meta .item .v{font-size:22px}
+  .tpl-classic .poster-footer{bottom:60px;left:80px;right:80px;font-size:12px}
+
+  /* TEMPLATE 2 — CIRCULAR */
+  .tpl-circular{--frame-pad:0}
+  .tpl-circular .poster-bg{display:none}
+  .tpl-circular .poster-frame{display:none}
+  .tpl-circular .una-mark{top:60px;left:50%;transform:translateX(-50%)}
+  .tpl-circular .center-image{top:200px;width:520px;height:520px}
+  .tpl-circular .poster-content{bottom:60px;left:0;right:0;text-align:center;padding:0 80px}
+  .tpl-circular .event-type{justify-content:center;font-size:14px;margin-bottom:14px}
+  .tpl-circular .event-type::before,.tpl-circular .event-type::after{
+    content:'';height:1px;background:var(--p-accent);width:30px;
+  }
+  .tpl-circular .event-title{font-size:96px;letter-spacing:6px;margin-bottom:18px;line-height:1}
+  .tpl-circular .event-lineup{
+    font-size:18px;color:var(--p-muted);border:none;padding:0;margin-bottom:18px;
+  }
+  .tpl-circular .event-meta{
+    border:none;font-size:18px;letter-spacing:4px;color:var(--p-accent);
+    justify-content:center;gap:24px;
+  }
+  .tpl-circular .event-meta .item .v{color:var(--p-accent);font-size:18px}
+  .tpl-circular .event-meta .item label{display:none}
+
+  /* TEMPLATE 3 — DIVIDIDO */
+  .tpl-split .poster-bg{width:50%;height:100%}
+  .tpl-split .poster-bg img{opacity:1;filter:grayscale(.3) contrast(1.05)}
+  .tpl-split .poster-bg::after{
+    background:linear-gradient(90deg,transparent 0%,transparent 60%,var(--p-bg) 100%);
+  }
+  .tpl-split .poster-frame{display:none}
+  .tpl-split .una-mark{top:60px;right:60px;left:auto}
+  .tpl-split .poster-content{
+    right:0;top:0;width:50%;height:100%;left:auto;bottom:auto;
+    padding:80px 60px;display:flex;flex-direction:column;justify-content:center;
+  }
+  .tpl-split .event-type{font-size:14px;margin-bottom:20px}
+  .tpl-split .event-type::before{width:30px}
+  .tpl-split .event-title{font-size:120px;margin-bottom:30px}
+  .tpl-split .event-lineup{font-size:18px;line-height:1.7;padding-left:16px;margin-bottom:40px}
+  .tpl-split .event-meta{
+    border-top-color:var(--p-muted);padding-top:24px;display:block;
+  }
+  .tpl-split .event-meta .item{margin-bottom:14px}
+  .tpl-split .event-meta .item label{font-size:10px;margin-bottom:4px}
+  .tpl-split .event-meta .item .v{font-size:18px}
+  .tpl-split .poster-footer{display:none}
+
+  /* TEMPLATE 4 — POESIA (centrado, etéreo) */
+  .tpl-poetry .poster-frame{display:none}
+  .tpl-poetry .una-mark{top:80px;left:50%;transform:translateX(-50%)}
+  .tpl-poetry .poster-content{
+    left:80px;right:80px;top:50%;transform:translateY(-50%);text-align:center;
+  }
+  .tpl-poetry .event-type{
+    justify-content:center;font-size:13px;letter-spacing:8px;margin-bottom:30px;
+  }
+  .tpl-poetry .event-type::before{width:60px}
+  .tpl-poetry .event-type::after{
+    content:'';height:2px;background:var(--p-accent);width:60px;
+  }
+  .tpl-poetry .event-title{
+    font-family:'Bebas Neue',serif;font-size:180px;line-height:.9;letter-spacing:0;
+    margin-bottom:40px;font-style:italic;
+  }
+  .tpl-poetry .event-lineup{
+    font-size:20px;line-height:2;border:none;padding:0;text-align:center;
+    color:var(--p-muted);font-style:italic;letter-spacing:2px;
+  }
+  .tpl-poetry .poster-footer{
+    bottom:80px;left:80px;right:80px;font-size:12px;justify-content:center;gap:30px;
+  }
+  .tpl-poetry .poster-footer span:not(:first-child)::before{
+    content:'·';margin-right:30px;color:var(--p-accent);
+  }
+
+  /* TEMPLATE 5 — SLAM (impacto, cartaz brutal) */
+  .tpl-slam{--frame-pad:30px}
+  .tpl-slam .poster-frame{
+    border-width:6px;
+  }
+  .tpl-slam .una-mark{top:70px;left:70px}
+  .tpl-slam .poster-content{
+    left:70px;right:70px;top:200px;bottom:200px;
+    display:flex;flex-direction:column;justify-content:center;
+  }
+  .tpl-slam .event-type{
+    background:var(--p-accent);color:var(--p-bg);
+    padding:8px 16px;display:inline-flex;width:fit-content;font-size:18px;
+    margin-bottom:30px;letter-spacing:8px;font-weight:700;
+  }
+  .tpl-slam .event-type::before{display:none}
+  .tpl-slam .event-title{
+    font-family:'Archivo Black',sans-serif;font-size:200px;line-height:.85;
+    letter-spacing:-4px;margin-bottom:30px;
+  }
+  .tpl-slam .event-lineup{
+    font-size:26px;font-weight:700;border-left-width:4px;padding-left:20px;
+    text-transform:uppercase;letter-spacing:2px;
+  }
+  .tpl-slam .event-meta{
+    position:absolute;bottom:70px;left:70px;right:70px;
+    border-top-width:2px;padding-top:20px;
+  }
+  .tpl-slam .event-meta .item label{font-size:11px}
+  .tpl-slam .event-meta .item .v{font-size:24px}
+  .tpl-slam .poster-footer{bottom:30px;left:70px;right:70px;font-size:11px}
+
+  /* TEMPLATE 6 — SHOW (line-up grid com fotos) */
+  .tpl-show .una-mark{top:60px;left:60px}
+  .tpl-show .event-type{
+    position:absolute;top:60px;right:60px;font-size:14px;margin:0;
+  }
+  .tpl-show .event-type::before{display:none}
+  .tpl-show .poster-content{
+    left:60px;right:60px;top:140px;
+  }
+  .tpl-show .event-title{font-size:120px;margin-bottom:20px;line-height:.9}
+  .tpl-show .event-lineup{display:none}
+  .tpl-show .event-meta{
+    margin-top:20px;gap:36px;padding-top:20px;
+  }
+  .tpl-show .event-meta .item label{font-size:11px;margin-bottom:6px}
+  .tpl-show .event-meta .item .v{font-size:20px}
+  .tpl-show .lineup-grid{
+    bottom:130px;left:60px;right:60px;height:480px;
+    grid-template-columns:repeat(3,1fr);
+  }
+  .tpl-show .poster-footer{bottom:60px;left:60px;right:60px;font-size:12px}
+
+  /* ===== Ajustes específicos por formato ===== */
+
+  /* Story / Reels — vertical 9:16 */
+  .fmt-story.tpl-classic .una-mark{top:120px;left:80px}
+  .fmt-story.tpl-classic .poster-content{bottom:200px}
+  .fmt-story.tpl-classic .event-title{font-size:180px}
+  .fmt-story.tpl-classic .event-lineup{font-size:30px}
+  .fmt-story.tpl-classic .event-meta{flex-direction:column;gap:18px}
+  .fmt-story.tpl-classic .event-meta .item .v{font-size:28px}
+  .fmt-story.tpl-classic .poster-footer{bottom:120px}
+
+  .fmt-story.tpl-circular .center-image{top:380px;width:680px;height:680px}
+  .fmt-story.tpl-circular .una-mark{top:160px}
+  .fmt-story.tpl-circular .event-title{font-size:140px;letter-spacing:8px}
+  .fmt-story.tpl-circular .poster-content{bottom:180px}
+  .fmt-story.tpl-circular .event-lineup{font-size:24px}
+
+  .fmt-story.tpl-split{padding:0}
+  .fmt-story.tpl-split .poster-bg{width:100%;height:50%}
+  .fmt-story.tpl-split .poster-bg::after{
+    background:linear-gradient(180deg,transparent 0%,transparent 60%,var(--p-bg) 100%);
+  }
+  .fmt-story.tpl-split .poster-content{
+    width:100%;height:50%;top:50%;padding:80px 80px;
+  }
+  .fmt-story.tpl-split .event-title{font-size:140px}
+  .fmt-story.tpl-split .una-mark{top:80px;right:80px}
+
+  .fmt-story.tpl-poetry .event-title{font-size:200px}
+  .fmt-story.tpl-poetry .event-lineup{font-size:26px}
+
+  .fmt-story.tpl-slam .event-title{font-size:240px}
+  .fmt-story.tpl-slam .event-lineup{font-size:30px}
+
+  .fmt-story.tpl-show .lineup-grid{
+    grid-template-columns:repeat(2,1fr);
+    height:auto;top:280px;bottom:300px;
+  }
+  .fmt-story.tpl-show .event-title{font-size:140px}
+
+  /* Portrait 4:5 */
+  .fmt-portrait.tpl-classic .event-title{font-size:170px}
+  .fmt-portrait.tpl-circular .center-image{top:260px;width:580px;height:580px}
+  .fmt-portrait.tpl-show .lineup-grid{height:560px}
+
+  /* Event Facebook 1200×630 — landscape */
+  .fmt-event.tpl-classic .una-mark{top:50px;left:50px}
+  .fmt-event.tpl-classic .poster-content{left:50px;right:50px;bottom:50px;top:120px}
+  .fmt-event.tpl-classic .event-title{font-size:96px;margin-bottom:18px}
+  .fmt-event.tpl-classic .event-lineup{font-size:18px;margin-bottom:18px}
+  .fmt-event.tpl-classic .event-type{font-size:14px;margin-bottom:14px}
+  .fmt-event.tpl-classic .event-meta{gap:30px;padding-top:14px}
+  .fmt-event.tpl-classic .event-meta .item .v{font-size:16px}
+  .fmt-event.tpl-classic .event-meta .item label{font-size:9px;margin-bottom:3px}
+  .fmt-event.tpl-classic .poster-footer{display:none}
+  .fmt-event.tpl-classic .poster-frame{inset:24px}
+
+  .fmt-event.tpl-circular{display:none} /* não combina */
+  .fmt-event.tpl-poetry .event-title{font-size:120px;margin-bottom:24px}
+  .fmt-event.tpl-poetry .una-mark{top:40px}
+  .fmt-event.tpl-poetry .poster-content{padding:0 60px}
+
+  .fmt-event.tpl-split .una-mark{top:30px;right:30px}
+  .fmt-event.tpl-split .poster-content{padding:50px 40px}
+  .fmt-event.tpl-split .event-title{font-size:80px;margin-bottom:18px}
+  .fmt-event.tpl-split .event-lineup{font-size:14px;margin-bottom:18px}
+
+  .fmt-event.tpl-slam .event-title{font-size:130px}
+  .fmt-event.tpl-slam .event-lineup{font-size:18px}
+  .fmt-event.tpl-slam .event-meta{position:static;margin-top:20px}
+  .fmt-event.tpl-slam .poster-content{top:130px;bottom:50px}
+
+  .fmt-event.tpl-show .lineup-grid{height:300px;bottom:60px}
+  .fmt-event.tpl-show .event-title{font-size:80px}
+  .fmt-event.tpl-show .poster-content{top:110px}
+
+  /* Twitter 16:9 — similar ao event */
+  .fmt-twitter.tpl-classic .una-mark{top:60px;left:80px}
+  .fmt-twitter.tpl-classic .poster-content{left:80px;right:80px;bottom:60px;top:140px}
+  .fmt-twitter.tpl-classic .event-title{font-size:140px;margin-bottom:20px}
+  .fmt-twitter.tpl-classic .event-lineup{font-size:22px;margin-bottom:20px}
+  .fmt-twitter.tpl-classic .event-meta{gap:40px;padding-top:18px}
+  .fmt-twitter.tpl-classic .event-meta .item .v{font-size:20px}
+  .fmt-twitter.tpl-classic .poster-footer{display:none}
+
+  .fmt-twitter.tpl-circular{display:none}
+  .fmt-twitter.tpl-split .una-mark{top:50px;right:50px}
+  .fmt-twitter.tpl-split .event-title{font-size:110px}
+  .fmt-twitter.tpl-poetry .event-title{font-size:160px}
+  .fmt-twitter.tpl-slam .event-title{font-size:170px}
+  .fmt-twitter.tpl-show .event-title{font-size:120px}
+  .fmt-twitter.tpl-show .lineup-grid{height:420px;bottom:60px}
+
+  /* Flyer A4 — vertical alongado */
+  .fmt-flyer.tpl-classic .event-title{font-size:200px}
+  .fmt-flyer.tpl-classic .event-lineup{font-size:28px}
+  .fmt-flyer.tpl-classic .una-mark{top:100px;left:90px}
+  .fmt-flyer.tpl-circular .center-image{top:300px;width:680px;height:680px}
+  .fmt-flyer.tpl-circular .event-title{font-size:130px}
+
+  /* ============ POSICIONAMENTO DOS GUESTS POR TEMPLATE ============ */
+  /* Clássico — guests acima do title */
+  .tpl-classic .guests-block{
+    left:80px;right:80px;bottom:auto;
+    top:200px;
+  }
+  .tpl-classic .guest-photo{width:72px;height:72px}
+  .tpl-classic .guest-name{font-size:15px}
+
+  /* Circular — guests entre marca e foto central */
+  .tpl-circular .guests-block{
+    top:140px;left:50%;transform:translateX(-50%);
+    align-items:center;
+  }
+  .tpl-circular .guests-list{justify-content:center}
+  .tpl-circular .center-image{top:280px}
+  .tpl-circular .guest-photo{width:56px;height:56px;border-width:2px}
+
+  /* Dividido — dentro da coluna direita, antes do meta */
+  .tpl-split .guests-block{
+    position:relative;left:auto;right:auto;top:auto;bottom:auto;
+    margin-bottom:24px;
+  }
+  .tpl-split .guests-list{flex-wrap:wrap}
+  .tpl-split .guest-photo{width:56px;height:56px}
+
+  /* Poesia — discreto, no rodapé acima do footer */
+  .tpl-poetry .guests-block{
+    bottom:170px;left:80px;right:80px;align-items:center;
+  }
+  .tpl-poetry .guests-list{justify-content:center}
+  .tpl-poetry .guests-label{
+    background:transparent;color:var(--p-accent);
+    border:1px solid var(--p-accent);padding:4px 12px;
+  }
+  .tpl-poetry .guest-photo{width:60px;height:60px}
+  .tpl-poetry .guest-name{font-size:13px;letter-spacing:2px}
+
+  /* Slam — destaque grande */
+  .tpl-slam .guests-block{
+    top:auto;bottom:230px;left:70px;right:70px;
+  }
+  .tpl-slam .guests-label{
+    font-size:14px;padding:8px 16px;letter-spacing:6px;
+  }
+  .tpl-slam .guest-photo{width:80px;height:80px;border-width:3px}
+  .tpl-slam .guest-name{font-size:18px;letter-spacing:2px}
+  .tpl-slam .guest-name small{font-size:10px}
+
+  /* Show — guests acima da meta, abaixo do title */
+  .tpl-show .guests-block{
+    top:auto;bottom:auto;
+    position:relative;margin-top:14px;
+    left:auto;right:auto;
+  }
+  .tpl-show .guest-photo{width:64px;height:64px}
+
+  /* Posicionamento do guests-block no Show */
+  .tpl-show .poster-content{display:flex;flex-direction:column}
+
+  /* ===== Ajustes nos formatos ===== */
+
+  /* Story — guests maiores */
+  .fmt-story .guest-photo{width:90px;height:90px}
+  .fmt-story .guest-name{font-size:18px}
+  .fmt-story.tpl-classic .guests-block{top:280px}
+  .fmt-story.tpl-circular .guests-block{top:240px}
+  .fmt-story.tpl-circular .center-image{top:420px}
+  .fmt-story.tpl-poetry .guests-block{bottom:240px}
+  .fmt-story.tpl-slam .guests-block{bottom:340px}
+
+  /* Event FB / Twitter — landscape compacto */
+  .fmt-event .guest-photo,
+  .fmt-twitter .guest-photo{width:48px;height:48px;border-width:2px}
+  .fmt-event .guest-name,
+  .fmt-twitter .guest-name{font-size:12px}
+  .fmt-event .guests-label,
+  .fmt-twitter .guests-label{font-size:10px;padding:3px 8px;letter-spacing:2px}
+  .fmt-event.tpl-classic .guests-block{top:90px;right:auto;left:50px}
+  .fmt-twitter.tpl-classic .guests-block{top:110px;right:auto;left:80px}
+  .fmt-event.tpl-circular{display:none}
+  .fmt-event.tpl-poetry .guests-block{bottom:90px}
+  .fmt-twitter.tpl-poetry .guests-block{bottom:120px}
+  .fmt-event.tpl-slam .guests-block{bottom:120px;left:50px;right:50px}
+  .fmt-twitter.tpl-slam .guests-block{bottom:160px;left:80px;right:80px}
+
+  /* Flyer — guests bem destacados */
+  .fmt-flyer .guest-photo{width:90px;height:90px}
+  .fmt-flyer .guest-name{font-size:18px}
+  .fmt-flyer.tpl-classic .guests-block{top:280px}
+  .fmt-flyer.tpl-circular .guests-block{top:200px}
+  .fmt-flyer.tpl-circular .center-image{top:380px}
+
+  /* ============ PAINEL DIREITA — PROJETOS / LEGENDA ============ */
+  .right-panel{
+    background:var(--panel);
+    border-left:1px solid var(--border);
+    padding:24px 20px 60px;
+    overflow-y:auto;max-height:100vh;
+  }
+  .right-panel::-webkit-scrollbar{width:6px}
+  .right-panel::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+
+  .projects-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+  .project-item{
+    background:var(--panel-2);border:1px solid #2a2a2a;
+    padding:10px 12px;border-radius:5px;
+    display:flex;justify-content:space-between;align-items:center;
+    cursor:pointer;transition:all .15s;
+  }
+  .project-item:hover{border-color:#444}
+  .project-item .p-info{
+    font-family:'Space Mono',monospace;font-size:12px;color:#fff;
+  }
+  .project-item .p-info small{
+    display:block;color:var(--muted-2);font-size:10px;margin-top:2px;
+  }
+  .project-item .p-actions{display:flex;gap:4px}
+  .project-item button{
+    background:transparent;border:none;color:var(--muted);
+    cursor:pointer;padding:4px 8px;border-radius:3px;font-size:14px;
+  }
+  .project-item button:hover{background:#222;color:#fff}
+  .project-item button.del:hover{color:#ff5555}
+
+  .empty-state{
+    text-align:center;padding:30px 16px;color:var(--muted-2);
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;
+    line-height:1.6;
+  }
+
+  .caption-box{
+    background:var(--panel-2);border:1px solid #2a2a2a;
+    border-radius:5px;padding:14px;margin-top:10px;
+    font-family:'Space Mono',monospace;font-size:12px;line-height:1.6;
+    color:var(--text);white-space:pre-wrap;max-height:300px;overflow-y:auto;
+  }
+  .caption-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+  .caption-actions .btn{padding:8px;font-size:10px;letter-spacing:1.5px}
+
+  /* Toast */
+  .toast{
+    position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);
+    background:var(--una-cyan);color:#000;padding:12px 24px;border-radius:6px;
+    font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1.5px;
+    text-transform:uppercase;font-weight:700;
+    box-shadow:0 8px 24px rgba(0,0,0,.5);
+    transition:transform .3s;z-index:100;opacity:0;
+  }
+  .toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+
+  /* ============ RESPONSIVO ============ */
+  @media (max-width: 1280px){
+    .app{grid-template-columns:380px 1fr 300px}
+  }
+  @media (max-width: 1100px){
+    .app{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+    .controls,.right-panel{max-height:none;border:none;border-bottom:1px solid var(--border)}
+    .preview-area{max-height:none;padding:24px 16px}
+    .action-bar{position:relative;margin:24px 0 0}
+  }
+  @media (max-width: 600px){
+    .controls,.right-panel{padding:20px 16px}
+    .action-bar{margin:24px -16px 0;padding:14px 16px}
+    .field-row,.field-row-3{grid-template-columns:1fr}
+    .format-grid,.template-grid{grid-template-columns:1fr 1fr}
+    .palette-grid{grid-template-columns:repeat(3,1fr)}
+    .preview-area{padding:16px 8px 40px}
+    .preview-header{font-size:9px;flex-wrap:wrap;gap:8px}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============== PAINEL CONTROLES (esquerda) ============== -->
+  <aside class="controls">
+    <div class="brand">
+      <div class="brand-mark">UNA</div>
+      <div class="brand-text">
+        <h1>GERADOR DE ARTES</h1>
+        <p>Sarau · São Paulo</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="content">Conteúdo</button>
+      <button class="tab" data-tab="design">Design</button>
+      <button class="tab" data-tab="image">Imagem</button>
+    </div>
+
+    <!-- ============== ABA: CONTEÚDO ============== -->
+    <div class="tab-panel active" id="tab-content">
+
+      <div class="section-title">Formato</div>
+      <div class="format-grid" id="format-grid">
+        <button class="format-btn active" data-fmt="square">
+          <span class="fmt-name">Feed</span>
+          <span class="fmt-size">1080×1080</span>
+        </button>
+        <button class="format-btn" data-fmt="portrait">
+          <span class="fmt-name">Carrossel</span>
+          <span class="fmt-size">1080×1350</span>
+        </button>
+        <button class="format-btn" data-fmt="story">
+          <span class="fmt-name">Story / Reels</span>
+          <span class="fmt-size">1080×1920</span>
+        </button>
+        <button class="format-btn" data-fmt="event">
+          <span class="fmt-name">Evento FB</span>
+          <span class="fmt-size">1200×630</span>
+        </button>
+        <button class="format-btn" data-fmt="twitter">
+          <span class="fmt-name">Twitter / X</span>
+          <span class="fmt-size">1600×900</span>
+        </button>
+        <button class="format-btn" data-fmt="flyer">
+          <span class="fmt-name">Flyer A4</span>
+          <span class="fmt-size">Impressão</span>
+        </button>
+      </div>
+
+      <div class="section-title">Tipo de evento</div>
+      <div class="field">
+        <select id="f-type">
+          <option value="SARAU">Sarau</option>
+          <option value="SHOW">Show</option>
+          <option value="OPEN MIC">Open Mic</option>
+          <option value="POESIA">Poesia</option>
+          <option value="SLAM">Slam</option>
+          <option value="FESTIVAL">Festival</option>
+        </select>
+      </div>
+
+      <div class="section-title">Texto</div>
+
+      <div class="field">
+        <label>Título / Edição <span class="counter" id="c-title">0/40</span></label>
+        <input id="f-title" type="text" value="UNA #07" maxlength="40">
+        <div class="hint">Ex: "UNA #07", "Sarau de Junho"</div>
+      </div>
+
+      <div class="field">
+        <label>Line-up / Atrações</label>
+        <textarea id="f-lineup" rows="4">MC LUA · GIOVANA SILVA
+PEDRO HENRIQUE
+SLAM ABERTO</textarea>
+        <div class="hint">Uma atração por linha</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Data</label>
+          <input id="f-date" type="text" value="15.JUN" maxlength="20">
+        </div>
+        <div class="field">
+          <label>Hora</label>
+          <input id="f-time" type="text" value="20H" maxlength="20">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Local</label>
+        <input id="f-place" type="text" value="CASA AMARELA · VILA MADALENA" maxlength="60">
+        <div class="quick-tags">
+          <span class="quick-tag" data-target="f-place" data-add="CASA AMARELA · VILA MADALENA">Casa Amarela</span>
+          <span class="quick-tag" data-target="f-place" data-add="CENTRO CULTURAL · SP">Centro Cultural</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Info extra (opcional)</label>
+        <input id="f-info" type="text" placeholder="Ex: COUVER R$ 20" maxlength="40">
+        <div class="quick-tags">
+          <span class="quick-tag" data-target="f-info" data-add="ENTRADA SOLIDÁRIA">Entrada solidária</span>
+          <span class="quick-tag" data-target="f-info" data-add="COUVER R$ 20">Couver R$ 20</span>
+          <span class="quick-tag" data-target="f-info" data-add="CLASSIFICAÇÃO LIVRE">Livre</span>
+          <span class="quick-tag" data-target="f-info" data-add="20H · ENTRADA FRANCA">Entrada franca</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Rodapé</label>
+        <input id="f-footer" type="text" value="@una.sarau" maxlength="40">
+      </div>
+    </div>
+
+    <!-- ============== ABA: DESIGN ============== -->
+    <div class="tab-panel" id="tab-design">
+
+      <div class="section-title">Template</div>
+      <div class="template-grid">
+        <button class="template-btn active" data-tpl="classic">Clássico</button>
+        <button class="template-btn" data-tpl="circular">Circular</button>
+        <button class="template-btn" data-tpl="split">Dividido</button>
+        <button class="template-btn" data-tpl="poetry">Poesia</button>
+        <button class="template-btn" data-tpl="slam">Slam</button>
+        <button class="template-btn" data-tpl="show">Show (grid)</button>
+      </div>
+      <div class="hint" style="margin-top:8px;color:var(--muted-2);font-size:11px;line-height:1.5">
+        <strong style="color:var(--una-cyan)">Clássico</strong>: imagem de fundo + texto • <strong style="color:var(--una-cyan)">Circular</strong>: foto em círculo • <strong style="color:var(--una-cyan)">Dividido</strong>: foto + info lado a lado • <strong style="color:var(--una-cyan)">Poesia</strong>: tipografia centrada e etérea • <strong style="color:var(--una-cyan)">Slam</strong>: impacto bruto • <strong style="color:var(--una-cyan)">Show</strong>: grid de fotos do line-up
+      </div>
+
+      <div class="section-title">Paleta de cores</div>
+      <div class="palette-grid">
+        <button class="palette-btn active" data-palette="default">
+          <div class="palette-swatch">
+            <span style="background:#000"></span>
+            <span style="background:#1FA9A8"></span>
+            <span style="background:#fff"></span>
+          </div>
+          <div class="palette-name">Padrão</div>
+        </button>
+        <button class="palette-btn" data-palette="cream">
+          <div class="palette-swatch">
+            <span style="background:#f4f1ea"></span>
+            <span style="background:#0E7A79"></span>
+            <span style="background:#0a0a0a"></span>
+          </div>
+          <div class="palette-name">Diurno</div>
+        </button>
+        <button class="palette-btn" data-palette="neon">
+          <div class="palette-swatch">
+            <span style="background:#000"></span>
+            <span style="background:#00fff0"></span>
+            <span style="background:#fff"></span>
+          </div>
+          <div class="palette-name">Neon</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============== ABA: IMAGEM ============== -->
+    <div class="tab-panel" id="tab-image">
+
+      <div class="section-title">Imagem principal</div>
+      <div class="field">
+        <div class="file-input">
+          <input id="f-image" type="file" accept="image/*">
+          <div class="file-input-display" id="file-display">
+            ↑ Clique para fazer upload<br>
+            <small style="color:var(--muted-2);font-size:10px">JPG, PNG · 1080×1080 ideal</small>
+          </div>
+        </div>
+
+        <div class="image-controls" id="image-controls">
+          <div class="ctrl">
+            <label>Posição horizontal <span id="lbl-x">50%</span></label>
+            <input id="img-x" type="range" min="0" max="100" value="50">
+          </div>
+          <div class="ctrl">
+            <label>Posição vertical <span id="lbl-y">50%</span></label>
+            <input id="img-y" type="range" min="0" max="100" value="50">
+          </div>
+          <div class="ctrl">
+            <label>Zoom <span id="lbl-scale">100%</span></label>
+            <input id="img-scale" type="range" min="100" max="200" value="100">
+          </div>
+          <div class="ctrl">
+            <label>Escurecimento <span id="lbl-darken">100%</span></label>
+            <input id="img-darken" type="range" min="0" max="150" value="100">
+          </div>
+          <div class="ctrl">
+            <label>Dessaturação <span id="lbl-gray">60%</span></label>
+            <input id="img-gray" type="range" min="0" max="100" value="60">
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Participações especiais <small style="color:var(--muted-2);font-size:10px;font-weight:400;letter-spacing:.5px">(até 2)</small></div>
+
+      <div class="field">
+        <label>Texto do destaque</label>
+        <select id="f-guest-label">
+          <option value="PART. ESPECIAL">★ Part. Especial</option>
+          <option value="CONVIDADO">★ Convidado(a)</option>
+          <option value="FEAT.">★ Feat.</option>
+          <option value="ESPECIAL">★ Especial</option>
+          <option value="__custom__">Texto personalizado…</option>
+        </select>
+        <input id="f-guest-label-custom" type="text" placeholder="Ex: PARTICIPAÇÃO SURPRESA" maxlength="30" style="margin-top:8px;display:none">
+      </div>
+
+      <div class="field">
+        <label>Convidado(a) 1 — Nome</label>
+        <input id="f-guest1-name" type="text" placeholder="Ex: TULIPA RUIZ" maxlength="30">
+        <div class="file-input" style="margin-top:8px">
+          <input id="f-guest1-img" type="file" accept="image/*">
+          <div class="file-input-display" id="guest1-display">
+            ↑ Foto do(a) convidado(a) 1
+          </div>
+        </div>
+        <button class="quick-tag" id="btn-clear-guest1" style="margin-top:6px;display:none;border:none">✕ Remover convidado 1</button>
+      </div>
+
+      <div class="field">
+        <label>Convidado(a) 2 — Nome (opcional)</label>
+        <input id="f-guest2-name" type="text" placeholder="Ex: CRIOLO" maxlength="30">
+        <div class="file-input" style="margin-top:8px">
+          <input id="f-guest2-img" type="file" accept="image/*">
+          <div class="file-input-display" id="guest2-display">
+            ↑ Foto do(a) convidado(a) 2
+          </div>
+        </div>
+        <button class="quick-tag" id="btn-clear-guest2" style="margin-top:6px;display:none;border:none">✕ Remover convidado 2</button>
+      </div>
+
+      <div class="section-title">Fotos do line-up <small style="color:var(--muted-2);font-size:10px;font-weight:400;letter-spacing:.5px">(template Show)</small></div>
+      <div class="field">
+        <div class="file-input">
+          <input id="f-images-multi" type="file" accept="image/*" multiple>
+          <div class="file-input-display" id="multi-display">
+            ↑ Upload de várias fotos<br>
+            <small style="color:var(--muted-2);font-size:10px">Cada foto = 1 artista do line-up</small>
+          </div>
+        </div>
+        <div class="hint" style="margin-top:8px">As fotos serão associadas, em ordem, aos nomes do line-up</div>
+      </div>
+    </div>
+
+    <!-- ============== AÇÕES ============== -->
+    <div class="action-bar">
+      <button class="btn btn-primary" id="btn-download">↓ Baixar PNG</button>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="btn-save">💾 Salvar</button>
+        <button class="btn btn-secondary" id="btn-reset">Limpar</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============== ÁREA CENTRAL — PREVIEW ============== -->
+  <main class="preview-area">
+    <div class="preview-header">
+      <div><span class="dot"></span><span id="preview-info">PREVIEW · 1080×1080</span></div>
+      <div id="preview-tpl">CLÁSSICO</div>
+    </div>
+
+    <div class="canvas-wrap" id="canvas-wrap">
+      <div class="poster fmt-square tpl-classic palette-default" id="poster">
+        <div class="poster-bg" id="poster-bg"></div>
+        <div class="grain"></div>
+        <div class="poster-frame"></div>
+
+        <div class="una-mark">
+          <svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <circle cx="6" cy="6" r="3"/><circle cx="6" cy="14" r="3"/><circle cx="6" cy="22" r="3"/><circle cx="6" cy="30" r="3"/>
+              <circle cx="14" cy="34" r="3"/><circle cx="22" cy="34" r="3"/>
+              <circle cx="30" cy="6" r="3"/><circle cx="30" cy="14" r="3"/><circle cx="30" cy="22" r="3"/><circle cx="30" cy="30" r="3"/>
+            </g>
+            <g>
+              <circle cx="44" cy="6" r="3"/><circle cx="44" cy="14" r="3"/><circle cx="44" cy="22" r="3"/><circle cx="44" cy="30" r="3"/><circle cx="44" cy="34" r="3"/>
+              <circle cx="52" cy="14" r="3"/><circle cx="60" cy="22" r="3"/>
+              <circle cx="68" cy="6" r="3"/><circle cx="68" cy="14" r="3"/><circle cx="68" cy="22" r="3"/><circle cx="68" cy="30" r="3"/><circle cx="68" cy="34" r="3"/>
+            </g>
+            <g>
+              <circle cx="86" cy="34" r="3"/><circle cx="86" cy="26" r="3"/><circle cx="86" cy="18" r="3"/>
+              <circle cx="94" cy="10" r="3"/><circle cx="94" cy="22" r="3"/>
+              <circle cx="102" cy="6" r="3"/><circle cx="102" cy="22" r="3"/>
+              <circle cx="110" cy="10" r="3"/><circle cx="110" cy="22" r="3"/>
+              <circle cx="118" cy="18" r="3"/><circle cx="118" cy="26" r="3"/><circle cx="118" cy="34" r="3"/>
+            </g>
+          </svg>
+          <span class="una-tag">SARAU · SP</span>
+        </div>
+
+        <div class="center-image" id="center-image" style="display:none">
+          <div class="center-image-placeholder">+ IMAGEM</div>
+        </div>
+
+        <div class="lineup-grid" id="lineup-grid" style="display:none"></div>
+
+        <div class="guests-block hidden" id="guests-block">
+          <div class="guests-label" id="guests-label">★ PART. ESPECIAL</div>
+          <div class="guests-list" id="guests-list"></div>
+        </div>
+
+        <div class="poster-content">
+          <div class="event-type" id="p-type">SARAU</div>
+          <h1 class="event-title" id="p-title">UNA #07</h1>
+          <div class="event-lineup" id="p-lineup">MC LUA · GIOVANA SILVA</div>
+          <div class="event-meta" id="p-meta">
+            <div class="item"><label>Data</label><div class="v" id="p-date">15.JUN</div></div>
+            <div class="item"><label>Hora</label><div class="v" id="p-time">20H</div></div>
+            <div class="item"><label>Local</label><div class="v" id="p-place">CASA AMARELA</div></div>
+          </div>
+        </div>
+
+        <div class="poster-footer">
+          <span id="p-footer">@una.sarau</span>
+          <span id="p-info">UNA · SP</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="color:#444;font-size:11px;font-family:'Space Mono',monospace;letter-spacing:1px;text-align:center;max-width:600px;margin-top:8px">
+      Preview em escala. O PNG baixado é em resolução real do formato escolhido.
+    </div>
+  </main>
+
+  <!-- ============== PAINEL DIREITA — PROJETOS / LEGENDA ============== -->
+  <aside class="right-panel">
+
+    <div class="section-title">Projetos salvos</div>
+    <div class="hint" style="margin-bottom:10px">Clique em "Salvar" no painel esquerdo. Tudo fica no seu navegador.</div>
+    <div id="projects-list">
+      <div class="empty-state">Nenhum projeto salvo ainda.<br>Crie um evento e clique em "Salvar".</div>
+    </div>
+
+    <div class="section-title">Legenda do Instagram</div>
+    <div class="hint">Texto pronto pra copiar e colar.</div>
+    <div class="caption-box" id="caption-box"></div>
+    <div class="caption-actions">
+      <button class="btn btn-secondary" id="btn-copy-caption">Copiar legenda</button>
+      <button class="btn btn-secondary" id="btn-regen-caption">Atualizar</button>
+    </div>
+
+  </aside>
+
+</div>
+
+<div class="toast" id="toast">Salvo!</div>
+
+<script>
+// ====================================================================
+// ESTADO
+// ====================================================================
+const DEFAULT_STATE = {
+  format:'square',
+  template:'classic',
+  palette:'default',
+  type:'SARAU',
+  title:'UNA #07',
+  lineup:'MC LUA · GIOVANA SILVA\nPEDRO HENRIQUE\nSLAM ABERTO',
+  date:'15.JUN',
+  time:'20H',
+  place:'CASA AMARELA · VILA MADALENA',
+  info:'',
+  footer:'@una.sarau',
+  bgImage:null,
+  lineupImages:[],
+  guestLabel:'PART. ESPECIAL',
+  guest1Name:'',
+  guest1Img:null,
+  guest2Name:'',
+  guest2Img:null,
+  imgX:50,
+  imgY:50,
+  imgScale:100,
+  imgDarken:100,
+  imgGray:60
+};
+let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+const FORMATS = {
+  square:    {w:1080,h:1080,name:'Feed',label:'1080×1080'},
+  portrait:  {w:1080,h:1350,name:'Carrossel',label:'1080×1350'},
+  story:     {w:1080,h:1920,name:'Story/Reels',label:'1080×1920'},
+  event:     {w:1200,h:630, name:'Evento FB',label:'1200×630'},
+  twitter:   {w:1600,h:900, name:'Twitter/X',label:'1600×900'},
+  flyer:     {w:1240,h:1754,name:'Flyer A4',label:'1240×1754'}
+};
+
+const TEMPLATE_NAMES = {
+  classic:'Clássico',circular:'Circular',split:'Dividido',
+  poetry:'Poesia',slam:'Slam',show:'Show'
+};
+
+const STORAGE_KEY = 'una_projects_v2';
+
+// ====================================================================
+// DOM
+// ====================================================================
+const poster = document.getElementById('poster');
+const posterBg = document.getElementById('poster-bg');
+const centerImage = document.getElementById('center-image');
+const lineupGrid = document.getElementById('lineup-grid');
+const canvasWrap = document.getElementById('canvas-wrap');
+
+// ====================================================================
+// RENDER
+// ====================================================================
+function render(){
+  // classes
+  poster.className = `poster fmt-${state.format} tpl-${state.template} palette-${state.palette}`;
+
+  // textos
+  document.getElementById('p-type').textContent = state.type;
+  document.getElementById('p-title').textContent = state.title || 'UNA';
+  document.getElementById('p-lineup').textContent = state.lineup;
+  document.getElementById('p-date').textContent = state.date;
+  document.getElementById('p-time').textContent = state.time;
+  document.getElementById('p-place').textContent = state.place;
+  document.getElementById('p-footer').textContent = state.footer;
+  document.getElementById('p-info').textContent = state.info || 'UNA · SP';
+
+  // counter
+  document.getElementById('c-title').textContent = `${(state.title||'').length}/40`;
+
+  // imagem principal
+  posterBg.innerHTML = '';
+  centerImage.innerHTML = '<div class="center-image-placeholder">+ IMAGEM</div>';
+  if(state.template === 'circular'){
+    centerImage.style.display = 'block';
+    if(state.bgImage){
+      centerImage.innerHTML = `<img src="${state.bgImage}" alt="">`;
+    }
+  } else if(state.template === 'show'){
+    centerImage.style.display = 'none';
+    // sem fundo, mas com grid de fotos
+  } else {
+    centerImage.style.display = 'none';
+    if(state.bgImage){
+      const img = document.createElement('img');
+      img.src = state.bgImage;
+      img.style.cssText = `
+        --img-x: ${state.imgX}%;
+        --img-y: ${state.imgY}%;
+        --img-scale: ${state.imgScale}%;
+        --img-opacity: ${0.55};
+        --img-gray: ${state.imgGray/100};
+      `;
+      posterBg.style.setProperty('--img-x', state.imgX + '%');
+      posterBg.style.setProperty('--img-y', state.imgY + '%');
+      posterBg.style.setProperty('--img-scale', state.imgScale + '%');
+      posterBg.style.setProperty('--img-gray', state.imgGray/100);
+      posterBg.style.setProperty('--darken', state.imgDarken/100);
+      posterBg.appendChild(img);
+    } else {
+      posterBg.style.setProperty('--darken', '0');
+    }
+  }
+
+  // grid de line-up (template show)
+  if(state.template === 'show'){
+    lineupGrid.style.display = 'grid';
+    lineupGrid.innerHTML = '';
+    const names = state.lineup.split('\n').filter(s=>s.trim());
+    const limit = state.format === 'story' ? 4 : 6;
+    const slots = Math.min(Math.max(names.length, 3), limit);
+    for(let i=0;i<slots;i++){
+      const name = names[i] || '';
+      const img = state.lineupImages[i];
+      const div = document.createElement('div');
+      div.className = 'artist' + (img ? '' : ' empty');
+      if(img){
+        div.innerHTML = `<img src="${img}" alt=""><div class="artist-name">${name||'—'}</div>`;
+      } else {
+        div.innerHTML = name ? `<div class="artist-name">${name}</div>` : '+ FOTO';
+      }
+      lineupGrid.appendChild(div);
+    }
+  } else {
+    lineupGrid.style.display = 'none';
+  }
+
+  // ===== Participações especiais =====
+  const guestsBlock = document.getElementById('guests-block');
+  const guestsList = document.getElementById('guests-list');
+  const guestsLabel = document.getElementById('guests-label');
+  const hasGuest1 = state.guest1Name || state.guest1Img;
+  const hasGuest2 = state.guest2Name || state.guest2Img;
+
+  if(hasGuest1 || hasGuest2){
+    guestsBlock.classList.remove('hidden');
+    guestsLabel.textContent = '★ ' + (state.guestLabel || 'PART. ESPECIAL');
+    guestsList.innerHTML = '';
+
+    const guests = [];
+    if(hasGuest1) guests.push({name:state.guest1Name, img:state.guest1Img});
+    if(hasGuest2) guests.push({name:state.guest2Name, img:state.guest2Img});
+
+    guests.forEach(g => {
+      const div = document.createElement('div');
+      div.className = 'guest';
+      const initials = (g.name||'?').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+      div.innerHTML = `
+        <div class="guest-photo">
+          ${g.img ? `<img src="${g.img}" alt="">` : `<div class="guest-photo-placeholder">${initials||'?'}</div>`}
+        </div>
+        <div class="guest-name">
+          <small>com</small>
+          ${g.name || '—'}
+        </div>
+      `;
+      guestsList.appendChild(div);
+    });
+
+    // Em template Split e Show, mover o bloco pra dentro do poster-content
+    if(state.template === 'split' || state.template === 'show'){
+      const content = poster.querySelector('.poster-content');
+      if(content && guestsBlock.parentNode !== content){
+        if(state.template === 'split'){
+          // antes do meta
+          const meta = document.getElementById('p-meta');
+          content.insertBefore(guestsBlock, meta);
+        } else {
+          // show — depois do meta
+          content.appendChild(guestsBlock);
+        }
+      }
+    } else {
+      // mover de volta pro poster (fora do poster-content)
+      if(guestsBlock.parentNode !== poster){
+        poster.appendChild(guestsBlock);
+        // reordena: guests-block antes do poster-content
+        const content = poster.querySelector('.poster-content');
+        poster.insertBefore(guestsBlock, content);
+      }
+    }
+  } else {
+    guestsBlock.classList.add('hidden');
+  }
+
+  // ajusta tamanho do título por comprimento
+  adjustTitle();
+
+  // header info
+  const f = FORMATS[state.format];
+  document.getElementById('preview-info').textContent = `Preview · ${f.label}`;
+  document.getElementById('preview-tpl').textContent = TEMPLATE_NAMES[state.template].toUpperCase();
+
+  // escala para caber no preview
+  scalePreview();
+
+  // legenda
+  renderCaption();
+}
+
+function adjustTitle(){
+  const titleEl = document.getElementById('p-title');
+  const len = (state.title||'').length;
+  // tamanhos base por template
+  const sizes = {
+    classic:160,circular:96,split:120,poetry:180,slam:200,show:120
+  };
+  const base = sizes[state.template] || 100;
+  let factor = 1;
+  if(len > 22) factor = 0.6;
+  else if(len > 16) factor = 0.75;
+  else if(len > 12) factor = 0.88;
+  // não força em templates onde CSS já é específico por formato
+  if(state.format === 'square' || state.format === 'portrait'){
+    titleEl.style.fontSize = (base * factor) + 'px';
+  } else {
+    titleEl.style.fontSize = '';
+  }
+}
+
+function scalePreview(){
+  const f = FORMATS[state.format];
+  const maxW = Math.min(window.innerWidth - 720, 720);
+  const maxH = window.innerHeight - 200;
+
+  const scaleW = maxW / f.w;
+  const scaleH = maxH / f.h;
+  const scale = Math.min(scaleW, scaleH, 0.7);
+
+  poster.style.transform = `scale(${scale})`;
+  canvasWrap.style.width = (f.w * scale) + 'px';
+  canvasWrap.style.height = (f.h * scale) + 'px';
+}
+
+window.addEventListener('resize', scalePreview);
+
+// ====================================================================
+// LEGENDA INSTAGRAM
+// ====================================================================
+function generateCaption(){
+  const lines = [];
+  const title = state.title || 'UNA';
+  const type = (state.type||'').toLowerCase();
+
+  // headline
+  lines.push(`✦ ${title}`);
+  lines.push('');
+
+  // intro contextual
+  const intros = {
+    'sarau':[`mais um encontro pra dividir palavra, som e presença.`,`o sarau volta — espaço aberto pra quem cria.`],
+    'show':[`noite de música ao vivo no UNA.`,`palco montado, line-up confirmado.`],
+    'open mic':[`microfone aberto pra todo mundo que quiser subir.`,`sem julgamento, só voz e escuta.`],
+    'poesia':[`a poesia ocupa o espaço.`,`palavra falada, palavra escutada.`],
+    'slam':[`batalha de poesia falada, voto do público decide.`,`slam é confronto e celebração — palavra como arma.`],
+    'festival':[`uma noite especial, com tudo o que faz o UNA ser UNA.`]
+  };
+  const intro = (intros[type] || intros['sarau'])[0];
+  lines.push(intro);
+  lines.push('');
+
+  // line-up
+  if(state.lineup && state.lineup.trim()){
+    lines.push('LINE-UP:');
+    state.lineup.split('\n').forEach(l => {
+      if(l.trim()) lines.push('→ ' + l.trim());
+    });
+    lines.push('');
+  }
+
+  // participações especiais
+  const guests = [];
+  if(state.guest1Name) guests.push(state.guest1Name);
+  if(state.guest2Name) guests.push(state.guest2Name);
+  if(guests.length){
+    const labelText = (state.guestLabel || 'PART. ESPECIAL').toLowerCase();
+    lines.push(`★ ${labelText}: ${guests.join(' · ')}`);
+    lines.push('');
+  }
+
+  // info
+  if(state.date) lines.push(`📅 ${state.date}` + (state.time ? ` · ${state.time}` : ''));
+  if(state.place) lines.push(`📍 ${state.place}`);
+  if(state.info) lines.push(`🎟 ${state.info}`);
+  lines.push('');
+
+  // CTA
+  lines.push('marca quem precisa estar lá.');
+  lines.push('');
+
+  // hashtags
+  const tags = ['#una','#unasarau','#saraudesp','#poesiafalada','#cenaindependente','#culturasp','#saopaulo'];
+  if(type === 'slam') tags.push('#slam','#poesiaslam');
+  if(type === 'show') tags.push('#showsp','#musicaaovivo');
+  if(type === 'poesia') tags.push('#poesia','#literatura');
+  lines.push(tags.join(' '));
+
+  return lines.join('\n');
+}
+
+function renderCaption(){
+  document.getElementById('caption-box').textContent = generateCaption();
+}
+
+// ====================================================================
+// PROJETOS (localStorage)
+// ====================================================================
+function loadProjects(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch(e){ return []; }
+}
+function saveProjects(list){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+function renderProjects(){
+  const list = loadProjects();
+  const wrap = document.getElementById('projects-list');
+  if(list.length === 0){
+    wrap.innerHTML = '<div class="empty-state">Nenhum projeto salvo ainda.<br>Crie um evento e clique em "Salvar".</div>';
+    return;
+  }
+  wrap.innerHTML = list.map((p,i) => `
+    <div class="project-item" data-i="${i}">
+      <div class="p-info">
+        ${escapeHtml(p.title || 'Sem título')}
+        <small>${escapeHtml(p.date||'')} · ${TEMPLATE_NAMES[p.template]||''}</small>
+      </div>
+      <div class="p-actions">
+        <button class="load" title="Carregar">↓</button>
+        <button class="del" title="Apagar">✕</button>
+      </div>
+    </div>
+  `).join('');
+
+  wrap.querySelectorAll('.project-item').forEach(item => {
+    const i = parseInt(item.dataset.i);
+    item.querySelector('.load').addEventListener('click', () => loadProject(i));
+    item.querySelector('.del').addEventListener('click', e => { e.stopPropagation(); deleteProject(i); });
+  });
+}
+
+function saveCurrentProject(){
+  const list = loadProjects();
+  const name = state.title || 'Sem título';
+  // overwrite if exists with same name
+  const existing = list.findIndex(p => p.title === name);
+  const data = JSON.parse(JSON.stringify(state));
+  // não salvamos imagens grandes pra não estourar localStorage
+  data.bgImage = null;
+  data.lineupImages = [];
+  data._savedAt = Date.now();
+  if(existing >= 0){
+    list[existing] = data;
+  } else {
+    list.unshift(data);
+  }
+  // limita a 20 projetos
+  if(list.length > 20) list.length = 20;
+  saveProjects(list);
+  renderProjects();
+  showToast('Projeto salvo! (As imagens precisam ser reanexadas)');
+}
+
+function loadProject(i){
+  const list = loadProjects();
+  const p = list[i];
+  if(!p) return;
+  state = Object.assign({}, DEFAULT_STATE, p);
+  state.bgImage = null;
+  state.lineupImages = [];
+  syncFormFromState();
+  render();
+  showToast('Projeto carregado');
+}
+
+function deleteProject(i){
+  if(!confirm('Apagar este projeto?')) return;
+  const list = loadProjects();
+  list.splice(i,1);
+  saveProjects(list);
+  renderProjects();
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+// ====================================================================
+// SYNC FORM
+// ====================================================================
+function syncFormFromState(){
+  document.getElementById('f-type').value = state.type;
+  document.getElementById('f-title').value = state.title;
+  document.getElementById('f-lineup').value = state.lineup;
+  document.getElementById('f-date').value = state.date;
+  document.getElementById('f-time').value = state.time;
+  document.getElementById('f-place').value = state.place;
+  document.getElementById('f-info').value = state.info;
+  document.getElementById('f-footer').value = state.footer;
+
+  // guests
+  document.getElementById('f-guest1-name').value = state.guest1Name || '';
+  document.getElementById('f-guest2-name').value = state.guest2Name || '';
+  const knownLabels = ['PART. ESPECIAL','CONVIDADO','FEAT.','ESPECIAL'];
+  if(knownLabels.includes(state.guestLabel)){
+    document.getElementById('f-guest-label').value = state.guestLabel;
+    document.getElementById('f-guest-label-custom').style.display = 'none';
+  } else {
+    document.getElementById('f-guest-label').value = '__custom__';
+    document.getElementById('f-guest-label-custom').style.display = 'block';
+    document.getElementById('f-guest-label-custom').value = state.guestLabel || '';
+  }
+  updateGuestClearVisibility('1');
+  updateGuestClearVisibility('2');
+
+  document.querySelectorAll('.format-btn').forEach(b => b.classList.toggle('active', b.dataset.fmt === state.format));
+  document.querySelectorAll('.template-btn').forEach(b => b.classList.toggle('active', b.dataset.tpl === state.template));
+  document.querySelectorAll('.palette-btn').forEach(b => b.classList.toggle('active', b.dataset.palette === state.palette));
+
+  document.getElementById('img-x').value = state.imgX;
+  document.getElementById('img-y').value = state.imgY;
+  document.getElementById('img-scale').value = state.imgScale;
+  document.getElementById('img-darken').value = state.imgDarken;
+  document.getElementById('img-gray').value = state.imgGray;
+  updateImageLabels();
+
+  document.getElementById('image-controls').classList.toggle('visible', !!state.bgImage);
+
+  document.getElementById('file-display').innerHTML = state.bgImage
+    ? '↑ Trocar imagem<br><small style="color:var(--una-cyan);font-size:10px">Imagem carregada</small>'
+    : '↑ Clique para fazer upload<br><small style="color:var(--muted-2);font-size:10px">JPG, PNG · 1080×1080 ideal</small>';
+}
+
+function updateImageLabels(){
+  document.getElementById('lbl-x').textContent = state.imgX + '%';
+  document.getElementById('lbl-y').textContent = state.imgY + '%';
+  document.getElementById('lbl-scale').textContent = state.imgScale + '%';
+  document.getElementById('lbl-darken').textContent = state.imgDarken + '%';
+  document.getElementById('lbl-gray').textContent = state.imgGray + '%';
+}
+
+// ====================================================================
+// BINDINGS
+// ====================================================================
+
+// tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// formato
+document.querySelectorAll('.format-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.format = btn.dataset.fmt;
+    render();
+  });
+});
+
+// template
+document.querySelectorAll('.template-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.template = btn.dataset.tpl;
+    render();
+  });
+});
+
+// paleta
+document.querySelectorAll('.palette-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.palette-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.palette = btn.dataset.palette;
+    render();
+  });
+});
+
+// campos texto
+const fieldMap = {
+  'f-type':'type','f-title':'title','f-lineup':'lineup',
+  'f-date':'date','f-time':'time','f-place':'place','f-info':'info','f-footer':'footer'
+};
+Object.entries(fieldMap).forEach(([id,key])=>{
+  document.getElementById(id).addEventListener('input', e => {
+    state[key] = e.target.value;
+    render();
+  });
+});
+
+// quick tags
+document.querySelectorAll('.quick-tag').forEach(t => {
+  t.addEventListener('click', () => {
+    const target = t.dataset.target;
+    const value = t.dataset.add;
+    document.getElementById(target).value = value;
+    state[fieldMap[target]] = value;
+    render();
+  });
+});
+
+// imagem principal
+const fileInput = document.getElementById('f-image');
+const fileDisplay = document.getElementById('file-display');
+fileInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    state.bgImage = ev.target.result;
+    fileDisplay.innerHTML = `✓ ${file.name}<br><small style="color:var(--una-cyan);font-size:10px">Imagem carregada</small>`;
+    document.getElementById('image-controls').classList.add('visible');
+    render();
+  };
+  reader.readAsDataURL(file);
+});
+
+// múltiplas imagens (line-up)
+const multiInput = document.getElementById('f-images-multi');
+const multiDisplay = document.getElementById('multi-display');
+multiInput.addEventListener('change', async e => {
+  const files = Array.from(e.target.files);
+  if(!files.length) return;
+  const promises = files.map(f => new Promise(res => {
+    const r = new FileReader();
+    r.onload = ev => res(ev.target.result);
+    r.readAsDataURL(f);
+  }));
+  state.lineupImages = await Promise.all(promises);
+  multiDisplay.innerHTML = `✓ ${files.length} foto(s) carregada(s)<br><small style="color:var(--una-cyan);font-size:10px">Use o template "Show" pra ver o grid</small>`;
+  render();
+});
+
+// ===== PARTICIPAÇÕES ESPECIAIS =====
+// Label dropdown
+const guestLabelSelect = document.getElementById('f-guest-label');
+const guestLabelCustom = document.getElementById('f-guest-label-custom');
+guestLabelSelect.addEventListener('change', e => {
+  if(e.target.value === '__custom__'){
+    guestLabelCustom.style.display = 'block';
+    guestLabelCustom.focus();
+    state.guestLabel = guestLabelCustom.value || 'PART. ESPECIAL';
+  } else {
+    guestLabelCustom.style.display = 'none';
+    state.guestLabel = e.target.value;
+  }
+  render();
+});
+guestLabelCustom.addEventListener('input', e => {
+  state.guestLabel = e.target.value.toUpperCase() || 'PART. ESPECIAL';
+  render();
+});
+
+// Nomes dos guests
+['1','2'].forEach(n => {
+  const nameInput = document.getElementById(`f-guest${n}-name`);
+  const imgInput = document.getElementById(`f-guest${n}-img`);
+  const display = document.getElementById(`guest${n}-display`);
+  const clearBtn = document.getElementById(`btn-clear-guest${n}`);
+
+  nameInput.addEventListener('input', e => {
+    state[`guest${n}Name`] = e.target.value.toUpperCase();
+    e.target.value = state[`guest${n}Name`];
+    updateGuestClearVisibility(n);
+    render();
+  });
+
+  imgInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      state[`guest${n}Img`] = ev.target.result;
+      display.innerHTML = `✓ ${file.name}<br><small style="color:var(--una-cyan);font-size:10px">Foto carregada</small>`;
+      updateGuestClearVisibility(n);
+      render();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    state[`guest${n}Name`] = '';
+    state[`guest${n}Img`] = null;
+    nameInput.value = '';
+    imgInput.value = '';
+    display.innerHTML = `↑ Foto do(a) convidado(a) ${n}`;
+    updateGuestClearVisibility(n);
+    render();
+  });
+});
+
+function updateGuestClearVisibility(n){
+  const has = state[`guest${n}Name`] || state[`guest${n}Img`];
+  document.getElementById(`btn-clear-guest${n}`).style.display = has ? 'inline-block' : 'none';
+}
+
+// sliders de imagem
+['x','y','scale','darken','gray'].forEach(k => {
+  const el = document.getElementById('img-' + k);
+  el.addEventListener('input', e => {
+    state['img' + k.charAt(0).toUpperCase() + k.slice(1)] = parseInt(e.target.value);
+    updateImageLabels();
+    render();
+  });
+});
+
+// salvar / reset
+document.getElementById('btn-save').addEventListener('click', saveCurrentProject);
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if(!confirm('Limpar todos os campos? (projetos salvos não serão afetados)')) return;
+  state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+  state.title = '';
+  state.lineup = '';
+  state.date = '';
+  state.time = '';
+  state.place = '';
+  state.info = '';
+  state.guest1Name = '';
+  state.guest2Name = '';
+  fileInput.value = '';
+  multiInput.value = '';
+  document.getElementById('f-guest1-img').value = '';
+  document.getElementById('f-guest2-img').value = '';
+  document.getElementById('guest1-display').innerHTML = '↑ Foto do(a) convidado(a) 1';
+  document.getElementById('guest2-display').innerHTML = '↑ Foto do(a) convidado(a) 2';
+  multiDisplay.innerHTML = '↑ Upload de várias fotos<br><small style="color:var(--muted-2);font-size:10px">Cada foto = 1 artista do line-up</small>';
+  syncFormFromState();
+  updateGuestClearVisibility('1');
+  updateGuestClearVisibility('2');
+  render();
+});
+
+// copiar legenda
+document.getElementById('btn-copy-caption').addEventListener('click', async () => {
+  const text = generateCaption();
+  try{
+    await navigator.clipboard.writeText(text);
+    showToast('Legenda copiada');
+  } catch(e){
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Legenda copiada');
+  }
+});
+
+document.getElementById('btn-regen-caption').addEventListener('click', () => {
+  renderCaption();
+  showToast('Legenda atualizada');
+});
+
+// ====================================================================
+// DOWNLOAD (html2canvas)
+// ====================================================================
+document.getElementById('btn-download').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-download');
+  btn.textContent = 'Gerando...';
+  btn.disabled = true;
+
+  try{
+    const f = FORMATS[state.format];
+
+    // remove escala temporariamente pra renderizar em tamanho real
+    const originalTransform = poster.style.transform;
+    poster.style.transform = 'none';
+
+    // wrap pra forçar dimensão exata
+    const wrap = document.createElement('div');
+    wrap.style.cssText = `position:fixed;left:-99999px;top:0;width:${f.w}px;height:${f.h}px;`;
+    poster.parentNode.insertBefore(wrap, poster);
+    wrap.appendChild(poster);
+
+    await new Promise(r => setTimeout(r, 100));
+
+    const canvas = await html2canvas(poster, {
+      width: f.w,
+      height: f.h,
+      scale: 1,
+      useCORS: true,
+      backgroundColor: state.palette === 'cream' ? '#f4f1ea' : '#000',
+      logging: false
+    });
+
+    // restaura
+    canvasWrap.appendChild(poster);
+    poster.style.transform = originalTransform;
+    wrap.remove();
+
+    canvas.toBlob(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      const safeName = (state.title||'arte').toLowerCase().replace(/[^a-z0-9]/g,'-');
+      a.download = `una-${safeName}-${state.format}.png`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 500);
+      btn.textContent = '↓ Baixar PNG';
+      btn.disabled = false;
+      showToast('PNG baixado!');
+    }, 'image/png');
+
+  } catch(err){
+    console.error(err);
+    alert('Erro ao gerar imagem: ' + err.message);
+    btn.textContent = '↓ Baixar PNG';
+    btn.disabled = false;
+  }
+});
+
+// ====================================================================
+// TOAST
+// ====================================================================
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('visible'), 2500);
+}
+
+// ====================================================================
+// INIT
+// ====================================================================
+syncFormFromState();
+render();
+renderProjects();
+
+// dica visual: se for o primeiro acesso
+if(loadProjects().length === 0){
+  setTimeout(() => showToast('Bem-vindo ao UNA Generator'), 500);
+}
+</script>
+
+</body>
+</html>
